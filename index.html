@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Nutrition Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Daily Nutrition Tracker</h1>
+
+    <section id="totals">
+        <h2>Today's Totals</h2>
+        <div class="total-row">
+            <span>Calories:</span> <span id="totalCalories">0</span>
+        </div>
+        <div class="total-row">
+            <span>Fat (g):</span> <span id="totalFat">0</span>
+        </div>
+        <div class="total-row">
+            <span>Carbs (g):</span> <span id="totalCarbs">0</span>
+        </div>
+    </section>
+
+    <section id="addFood">
+        <h2>Add Food</h2>
+        <input id="foodName" type="text" placeholder="Food name">
+        <input id="calories" type="number" placeholder="Calories">
+        <input id="fat" type="number" placeholder="Fat (g)">
+        <input id="carbs" type="number" placeholder="Carbs (g)">
+        <button id="addButton">Add</button>
+        <button id="saveToLibraryButton">Save to Library</button>
+    </section>
+
+    <section id="foodLibrary">
+        <h2>Food Library</h2>
+
+        <!-- NEW: Search box -->
+        <input id="librarySearch" type="text" placeholder="Search foods...">
+
+        <!-- NEW: Scrollable list container -->
+        <div id="libraryScroll">
+            <ul id="libraryList"></ul>
+        </div>
+    </section>
+
+    <section id="entries">
+        <h2>Today's Entries</h2>
+        <ul id="entryList"></ul>
+    </section>
+
+    <script src="app.js"></script>
+</body>
+</html>
