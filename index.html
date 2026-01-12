@@ -1,55 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Nutrition Tracker</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Nutrition Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#4CAF50" />
 </head>
 <body>
 
-    <h1>Daily Nutrition Tracker</h1>
+  <h1>Daily Nutrition Tracker</h1>
 
-    <section id="totals">
-        <h2>Today's Totals</h2>
-        <div class="total-row">
-            <span>Calories:</span> <span id="totalCalories">0</span>
-        </div>
-        <div class="total-row">
-            <span>Fat (g):</span> <span id="totalFat">0</span>
-        </div>
-        <div class="total-row">
-            <span>Carbs (g):</span> <span id="totalCarbs">0</span>
-        </div>
-    </section>
+  <section id="totals">
+    <h2>Today's Totals</h2>
+    <div class="total-row"><span>Calories:</span> <span id="totalCalories">0</span></div>
+    <div class="total-row"><span>Fat (g):</span> <span id="totalFat">0</span></div>
+    <div class="total-row"><span>Carbs (g):</span> <span id="totalCarbs">0</span></div>
+  </section>
 
-    <section id="addFood">
-        <h2>Add Food</h2>
-        <input id="foodName" type="text" placeholder="Food name">
-        <input id="calories" type="number" placeholder="Calories">
-        <input id="fat" type="number" placeholder="Fat (g)">
-        <input id="carbs" type="number" placeholder="Carbs (g)">
-        <button id="addButton">Add</button>
-        <button id="saveToLibraryButton">Save to Library</button>
-    </section>
+  <section id="addFood">
+    <h2>Add Food</h2>
+    <input id="foodName" type="text" placeholder="Food name" />
+    <input id="calories" type="number" placeholder="Calories" />
+    <input id="fat" type="number" placeholder="Fat (g)" />
+    <input id="carbs" type="number" placeholder="Carbs (g)" />
+    <button id="addButton">Add</button>
+    <button id="saveToLibraryButton">Save to Library</button>
+  </section>
 
-    <section id="foodLibrary">
-        <h2>Food Library</h2>
+  <section id="foodLibrary">
+    <h2>Food Library</h2>
+    <input id="librarySearch" type="text" placeholder="Search foods..." />
+    <div id="libraryScroll">
+      <ul id="libraryList"></ul>
+    </div>
+  </section>
 
-        <!-- NEW: Search box -->
-        <input id="librarySearch" type="text" placeholder="Search foods...">
+  <section id="entries">
+    <h2>Today's Entries</h2>
+    <ul id="entryList"></ul>
+  </section>
 
-        <!-- NEW: Scrollable list container -->
-        <div id="libraryScroll">
-            <ul id="libraryList"></ul>
-        </div>
-    </section>
-
-    <section id="entries">
-        <h2>Today's Entries</h2>
-        <ul id="entryList"></ul>
-    </section>
-
-    <script src="app.js"></script>
+  <script src="app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js")
+        .then(() => console.log("Service Worker registered"))
+        .catch(err => console.error("Service Worker failed:", err));
+    }
+  </script>
 </body>
 </html>
