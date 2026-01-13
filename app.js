@@ -17,6 +17,79 @@ function saveLibrary() {
 }
 
 // -------------------------------
+// Daily totals history and rollover
+// -------------------------------
+let dailyTotals = JSON.parse(localStorage.getItem("dailyTotals")) || [];
+
+function saveDailyTotals() {
+    localStorage.setItem("dailyTotals", JSON.stringify(dailyTotals));
+}
+
+function getTodayDate() {
+    return new Date().toISOString().slice(0, 10);
+}
+
+function performDailyRollover() {
+    const today = getTodayDate();
+    let lastDate = localStorage.getItem("lastDate");
+
+    // First run: no lastDate yet
+    if (!lastDate) {
+        localStorage.setItem("lastDate", today);
+        return;
+    }
+
+    // Same day: nothing to do
+    if (lastDate === today) {
+        return;
+    }
+
+    // We have moved to a new day.
+    // Collect totals for all entries older than today, grouped by date.
+    const totalsByDate = {};
+
+    entries.forEach(entry => {
+        if (entry.date === today) return; // keep today's entries out of rollover
+
+        if (!totalsByDate[entry.date]) {
+            totalsByDate[entry.date] = {
+                date: entry.date,
+                calories: 0,
+                fat: 0,
+                carbs: 0
+            };
+        }
+
+        totalsByDate[entry.date].calories += entry.calories;
+        totalsByDate[entry.date].fat += entry.fat;
+        totalsByDate[entry.date].carbs += entry.carbs;
+    });
+
+    // Merge computed totals into dailyTotals array (newest first)
+    Object.values(totalsByDate).forEach(dayTotals => {
+        const existingIndex = dailyTotals.findIndex(d => d.date === dayTotals.date);
+        if (existingIndex !== -1) {
+            dailyTotals[existingIndex] = dayTotals;
+        } else {
+            dailyTotals.push(dayTotals);
+        }
+    });
+
+    dailyTotals.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+    saveDailyTotals();
+
+    // Keep only today's entries in the main entries array
+    entries = entries.filter(entry => entry.date === today);
+    saveEntries();
+
+    // Update lastDate to today
+    localStorage.setItem("lastDate", today);
+}
+
+// Run rollover check on load so today starts clean if the date changed
+performDailyRollover();
+
+// -------------------------------
 // Add a new food entry
 // -------------------------------
 document.getElementById("addButton").addEventListener("click", () => {
@@ -218,7 +291,7 @@ function clearInputs() {
 }
 
 // -------------------------------
-// Initial load
+// Initial load (after rollover)
 // -------------------------------
 renderEntries();
 updateTotals();
