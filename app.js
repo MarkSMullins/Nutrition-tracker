@@ -275,9 +275,10 @@ function updateTotals() {
     const totalFat = todayEntries.reduce((sum, e) => sum + e.fat, 0);
     const totalCarbs = todayEntries.reduce((sum, e) => sum + e.carbs, 0);
 
-    document.getElementById("totalCalories").textContent = totalCalories;
-    document.getElementById("totalFat").textContent = totalFat;
-    document.getElementById("totalCarbs").textContent = totalCarbs;
+    document.getElementById("totalCalories").textContent = totalCalories.toFixed(2);
+    document.getElementById("totalFat").textContent = totalFat.toFixed(2);
+    document.getElementById("totalCarbs").textContent = totalCarbs.toFixed(2);
+
 }
 
 // -------------------------------
@@ -296,3 +297,4 @@ function clearInputs() {
 renderEntries();
 updateTotals();
 renderLibrary();
+
