@@ -4,14 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Daily Nutrition Tracker</title>
+
+  <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#4CAF50" />
 </head>
+
 <body>
 
   <h1>Daily Nutrition Tracker</h1>
 
+  <!-- Today's Totals -->
   <section id="totals">
     <h2>Today's Totals</h2>
     <div class="total-row"><span>Calories:</span> <span id="totalCalories">0</span></div>
@@ -19,6 +25,7 @@
     <div class="total-row"><span>Carbs (g):</span> <span id="totalCarbs">0</span></div>
   </section>
 
+  <!-- Add Food -->
   <section id="addFood">
     <h2>Add Food</h2>
     <input id="foodName" type="text" placeholder="Food name" />
@@ -29,6 +36,7 @@
     <button id="saveToLibraryButton">Save to Library</button>
   </section>
 
+  <!-- Food Library -->
   <section id="foodLibrary">
     <h2>Food Library</h2>
     <input id="librarySearch" type="text" placeholder="Search foods..." />
@@ -37,20 +45,23 @@
     </div>
   </section>
 
+  <!-- Today's Entries -->
   <section id="entries">
     <h2>Today's Entries</h2>
     <ul id="entryList"></ul>
   </section>
 
+  <!-- App Logic -->
   <script src="app.js"></script>
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js")
-      .then(() => console.log("Service Worker registered"))
-      .catch(err => console.error("Service Worker failed:", err));
-  }
-</script>
 
+  <!-- Service Worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js")
+        .then(() => console.log("Service Worker registered"))
+        .catch(err => console.error("Service Worker failed:", err));
+    }
+  </script>
 
 </body>
 </html>
