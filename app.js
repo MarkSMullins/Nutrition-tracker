@@ -3,8 +3,10 @@
 // ------------------------------
 let foodLibrary = JSON.parse(localStorage.getItem("foodLibrary") || "[]");
 let todaysEntries = [];
+
 let pendingLibraryItem = null;       // temp storage before confirm
 let pendingLibraryCategory = null;   // selected category for library save
+let pendingDelete = null;            // { type: "today" | "library", index: number }
 
 // ------------------------------
 // DOM Elements
@@ -28,6 +30,11 @@ const libraryConfirmPopup = document.getElementById("libraryConfirmPopup");
 const libraryConfirmText = document.getElementById("libraryConfirmText");
 const libraryYes = document.getElementById("libraryYes");
 const libraryNo = document.getElementById("libraryNo");
+
+const deleteConfirmPopup = document.getElementById("deleteConfirmPopup");
+const deleteConfirmText = document.getElementById("deleteConfirmText");
+const deleteYes = document.getElementById("deleteYes");
+const deleteNo = document.getElementById("deleteNo");
 
 const libraryList = document.getElementById("libraryList");
 const librarySearch = document.getElementById("librarySearch");
@@ -110,18 +117,16 @@ saveToLibraryButton.addEventListener("click", () => {
 
   if (!name) return;
 
-  // store pending item
   pendingLibraryItem = { baseName: name, calories: cal, fat: f, carbs: c };
   pendingLibraryCategory = null;
 
-  // visually indicate category selection is needed (optional)
   categoryButtons.forEach(btn => btn.classList.remove("selected-category"));
 });
 
 // Category selection for library save
 categoryButtons.forEach(btn => {
   btn.addEventListener("click", () => {
-    if (!pendingLibraryItem) return; // only respond if Library was pressed
+    if (!pendingLibraryItem) return;
 
     pendingLibraryCategory = btn.getAttribute("data-category");
 
@@ -134,7 +139,7 @@ categoryButtons.forEach(btn => {
   });
 });
 
-// Confirm Yes/No
+// Confirm Yes/No for library save
 libraryYes.addEventListener("click", () => {
   if (!pendingLibraryItem || !pendingLibraryCategory) {
     libraryConfirmPopup.classList.add("hidden");
@@ -169,6 +174,45 @@ libraryNo.addEventListener("click", () => {
 });
 
 // ------------------------------
+// Double‑Tap Helper
+// ------------------------------
+function addDoubleTapListener(element, callback) {
+  let lastTap = 0;
+  element.addEventListener("click", () => {
+    const now = Date.now();
+    if (now - lastTap < 300) callback();
+    lastTap = now;
+  });
+}
+
+// ------------------------------
+// Delete Confirm Yes/No
+// ------------------------------
+deleteYes.addEventListener("click", () => {
+  if (!pendingDelete) return;
+
+  if (pendingDelete.type === "today") {
+    todaysEntries.splice(pendingDelete.index, 1);
+    updateTotals();
+    renderEntries();
+  }
+
+  if (pendingDelete.type === "library") {
+    foodLibrary.splice(pendingDelete.index, 1);
+    localStorage.setItem("foodLibrary", JSON.stringify(foodLibrary));
+    renderLibrary();
+  }
+
+  pendingDelete = null;
+  deleteConfirmPopup.classList.add("hidden");
+});
+
+deleteNo.addEventListener("click", () => {
+  pendingDelete = null;
+  deleteConfirmPopup.classList.add("hidden");
+});
+
+// ------------------------------
 // Update Totals
 // ------------------------------
 function updateTotals() {
@@ -191,9 +235,16 @@ function updateTotals() {
 function renderEntries() {
   entryList.innerHTML = "";
 
-  todaysEntries.forEach(item => {
+  todaysEntries.forEach((item, index) => {
     const li = document.createElement("li");
     li.textContent = `${item.name} — ${item.calories} cal, ${item.fat}g fat, ${item.carbs}g carbs`;
+
+    addDoubleTapListener(li, () => {
+      pendingDelete = { type: "today", index };
+      deleteConfirmText.textContent = "Delete this item?";
+      deleteConfirmPopup.classList.remove("hidden");
+    });
+
     entryList.appendChild(li);
   });
 }
@@ -225,15 +276,23 @@ function renderLibrary(filter = "") {
       return 0;
     });
 
-  filtered.forEach(item => {
+  filtered.forEach((item, index) => {
     const li = document.createElement("li");
     li.textContent = `${item.name} — ${item.calories} cal`;
+
+    addDoubleTapListener(li, () => {
+      pendingDelete = { type: "library", index };
+      deleteConfirmText.textContent = "Delete this item?";
+      deleteConfirmPopup.classList.remove("hidden");
+    });
+
     li.addEventListener("click", () => {
       foodName.value = item.name;
       calories.value = item.calories;
       fat.value = item.fat;
       carbs.value = item.carbs;
     });
+
     libraryList.appendChild(li);
   });
 }
