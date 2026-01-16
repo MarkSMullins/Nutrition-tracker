@@ -5,23 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Daily Nutrition Tracker</title>
 
-  <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
-
-  <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#4CAF50" />
 </head>
 
 <body>
 
-  <!-- Title as a button -->
+  <!-- Title Button -->
   <button id="titleButton" class="title-button">
-  <div style="font-size:20px;">Daily Nutrition Tracker</div>
-  <div style="font-size:12px; opacity:0.8;">(press to clear)</div>
-</button>
+    <div style="font-size:20px;">Daily Nutrition Tracker</div>
+    <div style="font-size:12px; opacity:0.8;">(press to clear)</div>
+  </button>
 
-  <!-- Today's Totals -->
+  <!-- Totals -->
   <section id="totals">
     <h2>Today's Totals</h2>
     <div class="total-row"><span>Calories:</span> <span id="totalCalories">0</span></div>
@@ -32,7 +29,6 @@
   <!-- Add Food -->
   <section id="addFood">
 
-    <!-- Header row: Title left, grid right -->
     <div class="section-header">
       <h2>Add Food</h2>
       <div class="category-grid">
@@ -43,13 +39,12 @@
       </div>
     </div>
 
-    <!-- Inputs -->
     <input id="foodName" type="text" placeholder="Food name" />
     <input id="calories" type="number" placeholder="Calories" />
     <input id="fat" type="number" placeholder="Fat (g)" />
     <input id="carbs" type="number" placeholder="Carbs (g)" />
 
-    <!-- Hidden multiplier value -->
+    <!-- Hidden multiplier -->
     <input id="multiplier" type="number" value="1" style="display:none;" />
 
     <!-- Action Buttons -->
@@ -59,27 +54,13 @@
       <button id="saveToLibraryButton">Library</button>
     </div>
 
-    <!-- Number Pad Popup -->
-    <div id="numberPad" class="number-pad hidden">
-      <div class="pad-row">
-        <button class="pad-btn">1</button>
-        <button class="pad-btn">2</button>
-        <button class="pad-btn">3</button>
-      </div>
-      <div class="pad-row">
-        <button class="pad-btn">4</button>
-        <button class="pad-btn">5</button>
-        <button class="pad-btn">6</button>
-      </div>
-      <div class="pad-row">
-        <button class="pad-btn">7</button>
-        <button class="pad-btn">8</button>
-        <button class="pad-btn">9</button>
-      </div>
-      <div class="pad-row">
-        <button class="pad-btn">0</button>
-        <button class="pad-btn pad-clear">Clear</button>
-        <button class="pad-btn pad-ok">OK</button>
+    <!-- Multiplier Popup -->
+    <div id="multiplierPopup" class="multiplier-popup hidden">
+      <label>Enter multiplier:</label>
+      <input id="multiplierEntry" type="number" step="0.1" min="0" />
+      <div class="popup-buttons">
+        <button id="multiplierOk">OK</button>
+        <button id="multiplierCancel">Cancel</button>
       </div>
     </div>
 
@@ -88,7 +69,6 @@
   <!-- Food Library -->
   <section id="foodLibrary">
 
-    <!-- Header row: Title left, grid right -->
     <div class="section-header">
       <h2>Food Library</h2>
       <div class="category-grid">
@@ -112,10 +92,8 @@
     <ul id="entryList"></ul>
   </section>
 
-  <!-- App Logic -->
   <script src="app.js"></script>
 
-  <!-- Service Worker -->
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("service-worker.js")
@@ -126,8 +104,6 @@
 
 </body>
 </html>
-
-
 
 
 
