@@ -17,7 +17,11 @@ const addButton = document.getElementById("addButton");
 const multiplyButton = document.getElementById("multiplyButton");
 const saveToLibraryButton = document.getElementById("saveToLibraryButton");
 
-const numberPad = document.getElementById("numberPad");
+const multiplierPopup = document.getElementById("multiplierPopup");
+const multiplierEntry = document.getElementById("multiplierEntry");
+const multiplierOk = document.getElementById("multiplierOk");
+const multiplierCancel = document.getElementById("multiplierCancel");
+
 const libraryList = document.getElementById("libraryList");
 const librarySearch = document.getElementById("librarySearch");
 
@@ -25,6 +29,7 @@ const totalCalories = document.getElementById("totalCalories");
 const totalFat = document.getElementById("totalFat");
 const totalCarbs = document.getElementById("totalCarbs");
 const entryList = document.getElementById("entryList");
+
 // ------------------------------
 // Title Button: Clear Today's Entries
 // ------------------------------
@@ -36,31 +41,22 @@ document.getElementById("titleButton").addEventListener("click", () => {
 });
 
 // ------------------------------
-// Number Pad Logic
+// Multiplier Popup Logic
 // ------------------------------
-let multiplierValue = ""; // user builds this by tapping digits
-
 multiplyButton.addEventListener("click", () => {
-  multiplierValue = "";
-  numberPad.classList.remove("hidden");
+  multiplierEntry.value = "";
+  multiplierPopup.classList.remove("hidden");
 });
 
-numberPad.addEventListener("click", (e) => {
-  if (!e.target.classList.contains("pad-btn")) return;
+multiplierOk.addEventListener("click", () => {
+  let value = parseFloat(multiplierEntry.value);
+  if (isNaN(value) || value <= 0) value = 1;
+  multiplierInput.value = value;
+  multiplierPopup.classList.add("hidden");
+});
 
-  const value = e.target.textContent;
-
-  if (e.target.classList.contains("pad-clear")) {
-    multiplierValue = "";
-  } else if (e.target.classList.contains("pad-ok")) {
-    if (multiplierValue === "" || multiplierValue === "0") {
-      multiplierValue = "1"; // default
-    }
-    multiplierInput.value = parseInt(multiplierValue, 10);
-    numberPad.classList.add("hidden");
-  } else {
-    multiplierValue += value;
-  }
+multiplierCancel.addEventListener("click", () => {
+  multiplierPopup.classList.add("hidden");
 });
 
 // ------------------------------
@@ -71,7 +67,7 @@ addButton.addEventListener("click", () => {
   const cal = parseFloat(calories.value) || 0;
   const f = parseFloat(fat.value) || 0;
   const c = parseFloat(carbs.value) || 0;
-  const mult = parseInt(multiplierInput.value) || 1;
+  const mult = parseFloat(multiplierInput.value) || 1;
 
   if (!name) return;
 
@@ -86,10 +82,8 @@ addButton.addEventListener("click", () => {
   updateTotals();
   renderEntries();
 
-  // Reset multiplier
   multiplierInput.value = 1;
 
-  // Clear inputs
   foodName.value = "";
   calories.value = "";
   fat.value = "";
@@ -170,5 +164,6 @@ librarySearch.addEventListener("input", () => {
 
 // Initial load
 renderLibrary();
+
 
 
