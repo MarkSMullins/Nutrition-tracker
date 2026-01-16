@@ -301,28 +301,31 @@ function renderLibrary(filter = "") {
       return 0;
     });
 
-  filtered.forEach((item, index) => {
-    const li = document.createElement("li");
-    li.textContent = `${item.name} — ${item.calories} cal`;
+  filtered.forEach((item) => {
+  const realIndex = foodLibrary.indexOf(item);
 
-    addDoubleTapListener(li, () => {
-      pendingDelete = { type: "library", index };
-      deleteConfirmText.textContent = "Delete this item?";
-      deleteConfirmPopup.classList.remove("hidden");
-      deleteConfirmPopup.scrollIntoView({ behavior: "smooth", block: "center" });
-    });
+  const li = document.createElement("li");
+  li.textContent = `${item.name} — ${item.calories} cal`;
 
-    li.addEventListener("click", () => {
-      if (suppressLibraryClick) return;
-
-      foodName.value = item.name;
-      calories.value = item.calories;
-      fat.value = item.fat;
-      carbs.value = item.carbs;
-    });
-
-    libraryList.appendChild(li);
+  addDoubleTapListener(li, () => {
+    pendingDelete = { type: "library", index: realIndex };
+    deleteConfirmText.textContent = "Delete this item?";
+    deleteConfirmPopup.classList.remove("hidden");
+    deleteConfirmPopup.scrollIntoView({ behavior: "smooth", block: "center" });
   });
+
+  li.addEventListener("click", () => {
+    if (suppressLibraryClick) return;
+
+    foodName.value = item.name;
+    calories.value = item.calories;
+    fat.value = item.fat;
+    carbs.value = item.carbs;
+  });
+
+  libraryList.appendChild(li);
+});
+
 }
 
 
@@ -339,6 +342,7 @@ librarySearch.addEventListener("input", () => {
 
 // Initial load
 renderLibrary();
+
 
 
 
