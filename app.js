@@ -7,6 +7,8 @@ let todaysEntries = [];
 let pendingLibraryItem = null;       // temp storage before confirm
 let pendingLibraryCategory = null;   // selected category for library save
 let pendingDelete = null;            // { type: "today" | "library", index: number }
+let suppressLibraryClick = false;    // prevents auto-click after saving
+
 
 // ------------------------------
 // DOM Elements
@@ -46,6 +48,7 @@ const entryList = document.getElementById("entryList");
 
 const categoryButtons = document.querySelectorAll(".category-button");
 
+
 // ------------------------------
 // Title Button: Clear Today's Entries
 // ------------------------------
@@ -55,6 +58,7 @@ document.getElementById("titleButton").addEventListener("click", () => {
   renderEntries();
   multiplierInput.value = 1;
 });
+
 
 // ------------------------------
 // Multiplier Popup Logic
@@ -74,6 +78,7 @@ multiplierOk.addEventListener("click", () => {
 multiplierCancel.addEventListener("click", () => {
   multiplierPopup.classList.add("hidden");
 });
+
 
 // ------------------------------
 // Add Food Entry
@@ -106,6 +111,7 @@ addButton.addEventListener("click", () => {
   carbs.value = "";
 });
 
+
 // ------------------------------
 // Save to Library (with category + confirm)
 // ------------------------------
@@ -123,6 +129,7 @@ saveToLibraryButton.addEventListener("click", () => {
   categoryButtons.forEach(btn => btn.classList.remove("selected-category"));
 });
 
+
 // Category selection for library save
 categoryButtons.forEach(btn => {
   btn.addEventListener("click", () => {
@@ -138,6 +145,7 @@ categoryButtons.forEach(btn => {
     libraryConfirmPopup.classList.remove("hidden");
   });
 });
+
 
 // Confirm Yes/No for library save
 libraryYes.addEventListener("click", () => {
@@ -165,12 +173,17 @@ libraryYes.addEventListener("click", () => {
 
   renderLibrary();
 
-  // Clear input fields after saving to library
+  // Clear input fields
   foodName.value = "";
   calories.value = "";
   fat.value = "";
   carbs.value = "";
+
+  // Prevent auto-click from refilling fields
+  suppressLibraryClick = true;
+  setTimeout(() => suppressLibraryClick = false, 300);
 });
+
 
 libraryNo.addEventListener("click", () => {
   pendingLibraryItem = null;
@@ -178,6 +191,7 @@ libraryNo.addEventListener("click", () => {
   libraryConfirmPopup.classList.add("hidden");
   categoryButtons.forEach(btn => btn.classList.remove("selected-category"));
 });
+
 
 // ------------------------------
 // Double‑Tap Helper
@@ -190,6 +204,7 @@ function addDoubleTapListener(element, callback) {
     lastTap = now;
   });
 }
+
 
 // ------------------------------
 // Delete Confirm Yes/No
@@ -218,6 +233,7 @@ deleteNo.addEventListener("click", () => {
   deleteConfirmPopup.classList.add("hidden");
 });
 
+
 // ------------------------------
 // Update Totals
 // ------------------------------
@@ -234,6 +250,7 @@ function updateTotals() {
   totalFat.textContent = f;
   totalCarbs.textContent = c;
 }
+
 
 // ------------------------------
 // Render Today's Entries
@@ -255,6 +272,7 @@ function renderEntries() {
     entryList.appendChild(li);
   });
 }
+
 
 // ------------------------------
 // Render Library (sorted by category then name)
@@ -295,6 +313,8 @@ function renderLibrary(filter = "") {
     });
 
     li.addEventListener("click", () => {
+      if (suppressLibraryClick) return;
+
       foodName.value = item.name;
       calories.value = item.calories;
       fat.value = item.fat;
@@ -305,17 +325,21 @@ function renderLibrary(filter = "") {
   });
 }
 
+
 function extractCategory(name) {
   const match = name.match(/\((.*?)\)$/);
   return match ? match[1] : "Other";
 }
 
+
 librarySearch.addEventListener("input", () => {
   renderLibrary(librarySearch.value);
 });
 
+
 // Initial load
 renderLibrary();
+
 
 
 
