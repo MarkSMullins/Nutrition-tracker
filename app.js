@@ -201,6 +201,12 @@ deleteYes.addEventListener("click", () => {
     foodLibrary.splice(pendingDelete.index, 1);
     localStorage.setItem("foodLibrary", JSON.stringify(foodLibrary));
     renderLibrary();
+    // Clear input fields after saving to library
+    foodName.value = "";
+    calories.value = "";
+    fat.value = "";
+    carbs.value = "";
+
   }
 
   pendingDelete = null;
@@ -308,6 +314,7 @@ librarySearch.addEventListener("input", () => {
 
 // Initial load
 renderLibrary();
+
 
 
 
