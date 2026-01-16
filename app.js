@@ -25,6 +25,15 @@ const totalCalories = document.getElementById("totalCalories");
 const totalFat = document.getElementById("totalFat");
 const totalCarbs = document.getElementById("totalCarbs");
 const entryList = document.getElementById("entryList");
+// ------------------------------
+// Title Button: Clear Today's Entries
+// ------------------------------
+document.getElementById("titleButton").addEventListener("click", () => {
+  todaysEntries = [];
+  updateTotals();
+  renderEntries();
+  multiplierInput.value = 1;
+});
 
 // ------------------------------
 // Number Pad Logic
@@ -161,4 +170,5 @@ librarySearch.addEventListener("input", () => {
 
 // Initial load
 renderLibrary();
+
 
