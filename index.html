@@ -15,7 +15,8 @@
 
 <body>
 
-  <h1>Daily Nutrition Tracker</h1>
+  <!-- Title as a button -->
+  <button id="titleButton" class="title-button">Daily Nutrition Tracker</button>
 
   <!-- Today's Totals -->
   <section id="totals">
@@ -28,18 +29,42 @@
   <!-- Add Food -->
   <section id="addFood">
     <h2>Add Food</h2>
+
     <input id="foodName" type="text" placeholder="Food name" />
     <input id="calories" type="number" placeholder="Calories" />
     <input id="fat" type="number" placeholder="Fat (g)" />
     <input id="carbs" type="number" placeholder="Carbs (g)" />
-    <button id="addButton">Add</button>
-    <button id="saveToLibraryButton">Save to Library</button>
+    <input id="multiplier" type="number" placeholder="Amount multiplier" />
+
+    <!-- Category Buttons (2×2 grid) -->
+    <div class="category-grid">
+      <button class="category-button" data-category="Fruit">Fruit</button>
+      <button class="category-button" data-category="Vegetables">Vegetables</button>
+      <button class="category-button" data-category="Meats">Meats</button>
+      <button class="category-button" data-category="Other">Other</button>
+    </div>
+
+    <!-- Action Buttons (single line) -->
+    <div class="action-row">
+      <button id="addButton" class="action-add">Add</button>
+      <button id="saveToLibraryButton" class="action-save">Save to Library</button>
+    </div>
   </section>
 
   <!-- Food Library -->
   <section id="foodLibrary">
     <h2>Food Library</h2>
+
     <input id="librarySearch" type="text" placeholder="Search foods..." />
+
+    <!-- Library Category Buttons (2×2 grid) -->
+    <div class="category-grid">
+      <button class="library-category-button" data-category="Fruit">Fruit</button>
+      <button class="library-category-button" data-category="Vegetables">Vegetables</button>
+      <button class="library-category-button" data-category="Meats">Meats</button>
+      <button class="library-category-button" data-category="Other">Other</button>
+    </div>
+
     <div id="libraryScroll">
       <ul id="libraryList"></ul>
     </div>
@@ -65,5 +90,6 @@
 
 </body>
 </html>
+
 
 
