@@ -1,300 +1,164 @@
-// -------------------------------
-// Load existing entries
-// -------------------------------
-let entries = JSON.parse(localStorage.getItem("nutritionEntries")) || [];
+// ------------------------------
+// Data Storage
+// ------------------------------
+let foodLibrary = JSON.parse(localStorage.getItem("foodLibrary") || "[]");
+let todaysEntries = [];
 
-function saveEntries() {
-    localStorage.setItem("nutritionEntries", JSON.stringify(entries));
-}
+// ------------------------------
+// DOM Elements
+// ------------------------------
+const foodName = document.getElementById("foodName");
+const calories = document.getElementById("calories");
+const fat = document.getElementById("fat");
+const carbs = document.getElementById("carbs");
+const multiplierInput = document.getElementById("multiplier");
 
-// -------------------------------
-// Load Food Library
-// -------------------------------
-let foodLibrary = JSON.parse(localStorage.getItem("foodLibrary")) || [];
+const addButton = document.getElementById("addButton");
+const multiplyButton = document.getElementById("multiplyButton");
+const saveToLibraryButton = document.getElementById("saveToLibraryButton");
 
-function saveLibrary() {
-    localStorage.setItem("foodLibrary", JSON.stringify(foodLibrary));
-}
+const numberPad = document.getElementById("numberPad");
+const libraryList = document.getElementById("libraryList");
+const librarySearch = document.getElementById("librarySearch");
 
-// -------------------------------
-// Daily totals history and rollover
-// -------------------------------
-let dailyTotals = JSON.parse(localStorage.getItem("dailyTotals")) || [];
+const totalCalories = document.getElementById("totalCalories");
+const totalFat = document.getElementById("totalFat");
+const totalCarbs = document.getElementById("totalCarbs");
+const entryList = document.getElementById("entryList");
 
-function saveDailyTotals() {
-    localStorage.setItem("dailyTotals", JSON.stringify(dailyTotals));
-}
+// ------------------------------
+// Number Pad Logic
+// ------------------------------
+let multiplierValue = ""; // user builds this by tapping digits
 
-function getTodayDate() {
-    return new Date().toISOString().slice(0, 10);
-}
-
-function performDailyRollover() {
-    const today = getTodayDate();
-    let lastDate = localStorage.getItem("lastDate");
-
-    // First run: no lastDate yet
-    if (!lastDate) {
-        localStorage.setItem("lastDate", today);
-        return;
-    }
-
-    // Same day: nothing to do
-    if (lastDate === today) {
-        return;
-    }
-
-    // We have moved to a new day.
-    // Collect totals for all entries older than today, grouped by date.
-    const totalsByDate = {};
-
-    entries.forEach(entry => {
-        if (entry.date === today) return; // keep today's entries out of rollover
-
-        if (!totalsByDate[entry.date]) {
-            totalsByDate[entry.date] = {
-                date: entry.date,
-                calories: 0,
-                fat: 0,
-                carbs: 0
-            };
-        }
-
-        totalsByDate[entry.date].calories += entry.calories;
-        totalsByDate[entry.date].fat += entry.fat;
-        totalsByDate[entry.date].carbs += entry.carbs;
-    });
-
-    // Merge computed totals into dailyTotals array (newest first)
-    Object.values(totalsByDate).forEach(dayTotals => {
-        const existingIndex = dailyTotals.findIndex(d => d.date === dayTotals.date);
-        if (existingIndex !== -1) {
-            dailyTotals[existingIndex] = dayTotals;
-        } else {
-            dailyTotals.push(dayTotals);
-        }
-    });
-
-    dailyTotals.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
-    saveDailyTotals();
-
-    // Keep only today's entries in the main entries array
-    entries = entries.filter(entry => entry.date === today);
-    saveEntries();
-
-    // Update lastDate to today
-    localStorage.setItem("lastDate", today);
-}
-
-// Run rollover check on load so today starts clean if the date changed
-performDailyRollover();
-
-// -------------------------------
-// Add a new food entry
-// -------------------------------
-document.getElementById("addButton").addEventListener("click", () => {
-    const name = document.getElementById("foodName").value.trim();
-    const calories = Number(document.getElementById("calories").value);
-    const fat = Number(document.getElementById("fat").value);
-    const carbs = Number(document.getElementById("carbs").value);
-
-    if (!name || isNaN(calories) || isNaN(fat) || isNaN(carbs)) {
-        alert("Please fill out all fields.");
-        return;
-    }
-
-    const entry = {
-        name,
-        calories,
-        fat,
-        carbs,
-        date: new Date().toISOString().slice(0, 10)
-    };
-
-    entries.push(entry);
-    saveEntries();
-    renderEntries();
-    updateTotals();
-
-    clearInputs();
+multiplyButton.addEventListener("click", () => {
+  multiplierValue = "";
+  numberPad.classList.remove("hidden");
 });
 
-// -------------------------------
-// Save current inputs to Food Library
-// -------------------------------
-document.getElementById("saveToLibraryButton").addEventListener("click", () => {
-    const name = document.getElementById("foodName").value.trim();
-    const calories = Number(document.getElementById("calories").value);
-    const fat = Number(document.getElementById("fat").value);
-    const carbs = Number(document.getElementById("carbs").value);
+numberPad.addEventListener("click", (e) => {
+  if (!e.target.classList.contains("pad-btn")) return;
 
-    if (!name || isNaN(calories) || isNaN(fat) || isNaN(carbs)) {
-        alert("Please fill out all fields before saving to library.");
-        return;
+  const value = e.target.textContent;
+
+  if (e.target.classList.contains("pad-clear")) {
+    multiplierValue = "";
+  } else if (e.target.classList.contains("pad-ok")) {
+    if (multiplierValue === "" || multiplierValue === "0") {
+      multiplierValue = "1"; // default
     }
-
-    const food = { name, calories, fat, carbs };
-    foodLibrary.push(food);
-    saveLibrary();
-    renderLibrary();
-
-    clearInputs();
+    multiplierInput.value = parseInt(multiplierValue, 10);
+    numberPad.classList.add("hidden");
+  } else {
+    multiplierValue += value;
+  }
 });
 
-// -------------------------------
-// Render Food Library (with search filter)
-// -------------------------------
-function renderLibrary() {
-    const list = document.getElementById("libraryList");
-    const search = document.getElementById("librarySearch").value.toLowerCase();
+// ------------------------------
+// Add Food Entry
+// ------------------------------
+addButton.addEventListener("click", () => {
+  const name = foodName.value.trim();
+  const cal = parseFloat(calories.value) || 0;
+  const f = parseFloat(fat.value) || 0;
+  const c = parseFloat(carbs.value) || 0;
+  const mult = parseInt(multiplierInput.value) || 1;
 
-    list.innerHTML = "";
+  if (!name) return;
 
-    foodLibrary
-        .filter(food => food.name.toLowerCase().includes(search))
-        .forEach((food, index) => {
-            const li = document.createElement("li");
-            li.textContent = `${food.name} — ${food.calories} cal, ${food.fat}g fat, ${food.carbs}g carbs`;
+  const entry = {
+    name,
+    calories: cal * mult,
+    fat: f * mult,
+    carbs: c * mult
+  };
 
-            // Single tap → use food
-            li.addEventListener("click", () => {
-                useFoodFromLibrary(food);
-            });
+  todaysEntries.push(entry);
+  updateTotals();
+  renderEntries();
 
-            // Double tap → delete food
-            li.addEventListener("dblclick", () => {
-                if (confirm(`Delete "${food.name}" from library?`)) {
-                    foodLibrary.splice(index, 1);
-                    saveLibrary();
-                    renderLibrary();
-                }
-            });
+  // Reset multiplier
+  multiplierInput.value = 1;
 
-            list.appendChild(li);
-        });
-}
+  // Clear inputs
+  foodName.value = "";
+  calories.value = "";
+  fat.value = "";
+  carbs.value = "";
+});
 
-document.getElementById("librarySearch").addEventListener("input", renderLibrary);
-
-// -------------------------------
-// Auto-fill inputs when selecting a library item
-// -------------------------------
-function useFoodFromLibrary(food) {
-    document.getElementById("foodName").value = food.name;
-    document.getElementById("calories").value = food.calories;
-    document.getElementById("fat").value = food.fat;
-    document.getElementById("carbs").value = food.carbs;
-}
-
-// -------------------------------
-// Render today's entries (NOW WITH DOUBLE-TAP EDIT/DELETE)
-// -------------------------------
-function renderEntries() {
-    const today = new Date().toISOString().slice(0, 10);
-    const list = document.getElementById("entryList");
-    list.innerHTML = "";
-
-    entries
-        .map((e, index) => ({ ...e, index })) // keep index for editing
-        .filter(e => e.date === today)
-        .forEach(e => {
-            const li = document.createElement("li");
-            li.textContent = `${e.name} — ${e.calories} cal, ${e.fat}g fat, ${e.carbs}g carbs`;
-
-            // DOUBLE TAP → edit or delete
-            li.addEventListener("dblclick", () => {
-                const action = prompt(
-                    `Edit or Delete?\n\n` +
-                    `1 = Edit\n` +
-                    `2 = Delete\n\n` +
-                    `Entry: ${e.name} (${e.calories} cal)`
-                );
-
-                if (action === "1") {
-                    editEntry(e.index);
-                } else if (action === "2") {
-                    deleteEntry(e.index);
-                }
-            });
-
-            list.appendChild(li);
-        });
-}
-
-// -------------------------------
-// Edit an entry
-// -------------------------------
-function editEntry(index) {
-    const entry = entries[index];
-
-    const newName = prompt("Food name:", entry.name);
-    if (!newName) return;
-
-    const newCalories = Number(prompt("Calories:", entry.calories));
-    const newFat = Number(prompt("Fat (g):", entry.fat));
-    const newCarbs = Number(prompt("Carbs (g):", entry.carbs));
-
-    if (isNaN(newCalories) || isNaN(newFat) || isNaN(newCarbs)) {
-        alert("Invalid numbers.");
-        return;
-    }
-
-    entries[index] = {
-        ...entry,
-        name: newName,
-        calories: newCalories,
-        fat: newFat,
-        carbs: newCarbs
-    };
-
-    saveEntries();
-    renderEntries();
-    updateTotals();
-}
-
-// -------------------------------
-// Delete an entry
-// -------------------------------
-function deleteEntry(index) {
-    if (confirm("Delete this entry?")) {
-        entries.splice(index, 1);
-        saveEntries();
-        renderEntries();
-        updateTotals();
-    }
-}
-
-// -------------------------------
-// Update totals
-// -------------------------------
+// ------------------------------
+// Update Totals
+// ------------------------------
 function updateTotals() {
-    const today = new Date().toISOString().slice(0, 10);
-    const todayEntries = entries.filter(e => e.date === today);
+  let cal = 0, f = 0, c = 0;
 
-    const totalCalories = todayEntries.reduce((sum, e) => sum + e.calories, 0);
-    const totalFat = todayEntries.reduce((sum, e) => sum + e.fat, 0);
-    const totalCarbs = todayEntries.reduce((sum, e) => sum + e.carbs, 0);
+  todaysEntries.forEach(item => {
+    cal += item.calories;
+    f += item.fat;
+    c += item.carbs;
+  });
 
-    document.getElementById("totalCalories").textContent = totalCalories.toFixed(2);
-    document.getElementById("totalFat").textContent = totalFat.toFixed(2);
-    document.getElementById("totalCarbs").textContent = totalCarbs.toFixed(2);
-
+  totalCalories.textContent = cal;
+  totalFat.textContent = f;
+  totalCarbs.textContent = c;
 }
 
-// -------------------------------
-// Utility
-// -------------------------------
-function clearInputs() {
-    document.getElementById("foodName").value = "";
-    document.getElementById("calories").value = "";
-    document.getElementById("fat").value = "";
-    document.getElementById("carbs").value = "";
+// ------------------------------
+// Render Today's Entries
+// ------------------------------
+function renderEntries() {
+  entryList.innerHTML = "";
+
+  todaysEntries.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = `${item.name} — ${item.calories} cal, ${item.fat}g fat, ${item.carbs}g carbs`;
+    entryList.appendChild(li);
+  });
 }
 
-// -------------------------------
-// Initial load (after rollover)
-// -------------------------------
-renderEntries();
-updateTotals();
+// ------------------------------
+// Save to Library
+// ------------------------------
+saveToLibraryButton.addEventListener("click", () => {
+  const name = foodName.value.trim();
+  const cal = parseFloat(calories.value) || 0;
+  const f = parseFloat(fat.value) || 0;
+  const c = parseFloat(carbs.value) || 0;
+
+  if (!name) return;
+
+  foodLibrary.push({ name, calories: cal, fat: f, carbs: c });
+  localStorage.setItem("foodLibrary", JSON.stringify(foodLibrary));
+
+  renderLibrary();
+});
+
+// ------------------------------
+// Render Library
+// ------------------------------
+function renderLibrary(filter = "") {
+  libraryList.innerHTML = "";
+
+  foodLibrary
+    .filter(item => item.name.toLowerCase().includes(filter.toLowerCase()))
+    .forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = `${item.name} — ${item.calories} cal`;
+      li.addEventListener("click", () => {
+        foodName.value = item.name;
+        calories.value = item.calories;
+        fat.value = item.fat;
+        carbs.value = item.carbs;
+      });
+      libraryList.appendChild(li);
+    });
+}
+
+librarySearch.addEventListener("input", () => {
+  renderLibrary(librarySearch.value);
+});
+
+// Initial load
 renderLibrary();
 
