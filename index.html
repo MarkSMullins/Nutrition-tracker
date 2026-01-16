@@ -29,13 +29,12 @@
   <!-- Add Food -->
   <section id="addFood">
 
-    <!-- Header row: Title left, 2×2 grid right -->
+    <!-- Header row: Title left, grid right -->
     <div class="section-header">
       <h2>Add Food</h2>
-
-      <div class="category-grid header-grid">
+      <div class="category-grid">
         <button class="category-button" data-category="Fruit">Fruit</button>
-        <button class="category-button" data-category="Vegetables">Veg</button>
+        <button class="category-button" data-category="Veg">Veg</button>
         <button class="category-button" data-category="Meats">Meats</button>
         <button class="category-button" data-category="Other">Other</button>
       </div>
@@ -47,14 +46,14 @@
     <input id="fat" type="number" placeholder="Fat (g)" />
     <input id="carbs" type="number" placeholder="Carbs (g)" />
 
-    <!-- Hidden multiplier value (set by number pad) -->
+    <!-- Hidden multiplier value -->
     <input id="multiplier" type="number" value="1" style="display:none;" />
 
     <!-- Action Buttons -->
     <div class="action-row">
-      <button id="addButton" class="action-add">Add</button>
-      <button id="multiplyButton" class="action-multiply">Multiply</button>
-      <button id="saveToLibraryButton" class="action-save">Library</button>
+      <button id="addButton">Add</button>
+      <button id="multiplyButton">Multiply</button>
+      <button id="saveToLibraryButton">Library</button>
     </div>
 
     <!-- Number Pad Popup -->
@@ -86,13 +85,12 @@
   <!-- Food Library -->
   <section id="foodLibrary">
 
-    <!-- Header row: Title left, 2×2 grid right -->
+    <!-- Header row: Title left, grid right -->
     <div class="section-header">
       <h2>Food Library</h2>
-
-      <div class="category-grid header-grid">
+      <div class="category-grid">
         <button class="library-category-button" data-category="Fruit">Fruit</button>
-        <button class="library-category-button" data-category="Vegetables">Veg</button>
+        <button class="library-category-button" data-category="Veg">Veg</button>
         <button class="library-category-button" data-category="Meats">Meats</button>
         <button class="library-category-button" data-category="Other">Other</button>
       </div>
@@ -125,6 +123,7 @@
 
 </body>
 </html>
+
 
 
 
