@@ -164,6 +164,12 @@ libraryYes.addEventListener("click", () => {
   categoryButtons.forEach(btn => btn.classList.remove("selected-category"));
 
   renderLibrary();
+
+  // Clear input fields after saving to library
+  foodName.value = "";
+  calories.value = "";
+  fat.value = "";
+  carbs.value = "";
 });
 
 libraryNo.addEventListener("click", () => {
@@ -201,12 +207,6 @@ deleteYes.addEventListener("click", () => {
     foodLibrary.splice(pendingDelete.index, 1);
     localStorage.setItem("foodLibrary", JSON.stringify(foodLibrary));
     renderLibrary();
-    // Clear input fields after saving to library
-    foodName.value = "";
-    calories.value = "";
-    fat.value = "";
-    carbs.value = "";
-
   }
 
   pendingDelete = null;
@@ -249,6 +249,7 @@ function renderEntries() {
       pendingDelete = { type: "today", index };
       deleteConfirmText.textContent = "Delete this item?";
       deleteConfirmPopup.classList.remove("hidden");
+      deleteConfirmPopup.scrollIntoView({ behavior: "smooth", block: "center" });
     });
 
     entryList.appendChild(li);
@@ -290,6 +291,7 @@ function renderLibrary(filter = "") {
       pendingDelete = { type: "library", index };
       deleteConfirmText.textContent = "Delete this item?";
       deleteConfirmPopup.classList.remove("hidden");
+      deleteConfirmPopup.scrollIntoView({ behavior: "smooth", block: "center" });
     });
 
     li.addEventListener("click", () => {
@@ -314,6 +316,7 @@ librarySearch.addEventListener("input", () => {
 
 // Initial load
 renderLibrary();
+
 
 
 
