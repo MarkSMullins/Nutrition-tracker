@@ -103,6 +103,17 @@ input[type="number"] {
   margin-top: 8px;
 }
 
+/* Library confirm popup */
+.library-confirm-popup {
+  background: white;
+  border: 2px solid #4CAF50;
+  border-radius: 6px;
+  padding: 12px;
+  width: 240px;
+  margin-top: 10px;
+}
+
+/* Hidden utility */
 .hidden {
   display: none;
 }
