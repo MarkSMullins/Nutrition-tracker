@@ -37,6 +37,11 @@ h2 {
   margin-bottom: 8px;
 }
 
+/* Allow popups to expand */
+#addFood {
+  overflow: visible;
+}
+
 /* 2×2 grid */
 .category-grid {
   display: grid;
@@ -103,7 +108,7 @@ input[type="number"] {
   margin-top: 8px;
 }
 
-/* Library confirm popup */
+/* Library confirm popup + Delete popup */
 .library-confirm-popup {
   background: white;
   border: 2px solid #4CAF50;
@@ -111,6 +116,10 @@ input[type="number"] {
   padding: 12px;
   width: 240px;
   margin-top: 10px;
+
+  /* Critical fixes */
+  position: relative;
+  z-index: 999;
 }
 
 /* Hidden utility */
@@ -138,6 +147,7 @@ input[type="number"] {
   background: white;
   border-bottom: 1px solid #ddd;
 }
+
 
 
 
