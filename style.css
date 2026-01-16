@@ -24,6 +24,10 @@ h2 {
   border: none;
   border-radius: 6px;
   margin-bottom: 12px;
+  .title-button:active {
+  opacity: 0.7;
+}
+
 }
 
 
@@ -145,5 +149,6 @@ input[type="number"] {
   background: white;
   border-bottom: 1px solid #ddd;
 }
+
 
 
