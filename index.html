@@ -28,42 +28,77 @@
 
   <!-- Add Food -->
   <section id="addFood">
-    <h2>Add Food</h2>
 
+    <!-- Header row: Title left, 2×2 grid right -->
+    <div class="section-header">
+      <h2>Add Food</h2>
+
+      <div class="category-grid header-grid">
+        <button class="category-button" data-category="Fruit">Fruit</button>
+        <button class="category-button" data-category="Vegetables">Veg</button>
+        <button class="category-button" data-category="Meats">Meats</button>
+        <button class="category-button" data-category="Other">Other</button>
+      </div>
+    </div>
+
+    <!-- Inputs -->
     <input id="foodName" type="text" placeholder="Food name" />
     <input id="calories" type="number" placeholder="Calories" />
     <input id="fat" type="number" placeholder="Fat (g)" />
     <input id="carbs" type="number" placeholder="Carbs (g)" />
-    <input id="multiplier" type="number" placeholder="Amount multiplier" />
 
-    <!-- Category Buttons (2×2 grid) -->
-    <div class="category-grid">
-      <button class="category-button" data-category="Fruit">Fruit</button>
-      <button class="category-button" data-category="Vegetables">Vegetables</button>
-      <button class="category-button" data-category="Meats">Meats</button>
-      <button class="category-button" data-category="Other">Other</button>
-    </div>
+    <!-- Hidden multiplier value (set by number pad) -->
+    <input id="multiplier" type="number" value="1" style="display:none;" />
 
-    <!-- Action Buttons (single line) -->
+    <!-- Action Buttons -->
     <div class="action-row">
       <button id="addButton" class="action-add">Add</button>
-      <button id="saveToLibraryButton" class="action-save">Save to Library</button>
+      <button id="multiplyButton" class="action-multiply">Multiply</button>
+      <button id="saveToLibraryButton" class="action-save">Library</button>
     </div>
+
+    <!-- Number Pad Popup -->
+    <div id="numberPad" class="number-pad hidden">
+      <div class="pad-row">
+        <button class="pad-btn">1</button>
+        <button class="pad-btn">2</button>
+        <button class="pad-btn">3</button>
+      </div>
+      <div class="pad-row">
+        <button class="pad-btn">4</button>
+        <button class="pad-btn">5</button>
+        <button class="pad-btn">6</button>
+      </div>
+      <div class="pad-row">
+        <button class="pad-btn">7</button>
+        <button class="pad-btn">8</button>
+        <button class="pad-btn">9</button>
+      </div>
+      <div class="pad-row">
+        <button class="pad-btn">0</button>
+        <button class="pad-btn pad-clear">Clear</button>
+        <button class="pad-btn pad-ok">OK</button>
+      </div>
+    </div>
+
   </section>
 
   <!-- Food Library -->
   <section id="foodLibrary">
-    <h2>Food Library</h2>
+
+    <!-- Header row: Title left, 2×2 grid right -->
+    <div class="section-header">
+      <h2>Food Library</h2>
+
+      <div class="category-grid header-grid">
+        <button class="library-category-button" data-category="Fruit">Fruit</button>
+        <button class="library-category-button" data-category="Vegetables">Veg</button>
+        <button class="library-category-button" data-category="Meats">Meats</button>
+        <button class="library-category-button" data-category="Other">Other</button>
+      </div>
+    </div>
 
     <input id="librarySearch" type="text" placeholder="Search foods..." />
-
-    <!-- Library Category Buttons (2×2 grid) -->
-    <div class="category-grid">
-      <button class="library-category-button" data-category="Fruit">Fruit</button>
-      <button class="library-category-button" data-category="Vegetables">Vegetables</button>
-      <button class="library-category-button" data-category="Meats">Meats</button>
-      <button class="library-category-button" data-category="Other">Other</button>
-    </div>
 
     <div id="libraryScroll">
       <ul id="libraryList"></ul>
@@ -90,6 +125,7 @@
 
 </body>
 </html>
+
 
 
 
