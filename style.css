@@ -1,3 +1,8 @@
+/* Prevent swipe-down refresh */
+html, body {
+  overscroll-behavior-y: none;
+}
+
 /* ------------------------------
    Global
 ------------------------------ */
@@ -90,7 +95,7 @@ button {
 }
 
 .primary {
-  background: #8ed1c6; /* mint */
+  background: #8ed1c6;
   color: #fff;
 }
 
@@ -193,6 +198,7 @@ button {
   justify-content: space-between;
   margin-top: 15px;
 }
+
 
 
 
