@@ -84,11 +84,11 @@ button:hover {
     display: grid;
     grid-template-columns: repeat(3, 80px);
     grid-template-rows: repeat(2, 40px);
-    gap: 6px;
+    gap: 2px;
 }
 
 .catButton {
-    border-radius: 5px;
+    border-radius: 2px;
     color: white;
     font-weight: bold;
     border: none;
@@ -137,6 +137,7 @@ button:hover {
     margin-bottom: 8px;
     font-size: 1rem;
 }
+
 
 
 
