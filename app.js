@@ -1,298 +1,303 @@
-// ------------------------------
-// Data Storage
-// ------------------------------
-let foodLibrary = JSON.parse(localStorage.getItem("foodLibrary") || "[]");
-let todaysEntries = [];
+// --app.js------------------------
+// Load existing entries
+// -------------------------------
+let entries = JSON.parse(localStorage.getItem("nutritionEntries")) || [];
 
-let pendingLibraryItem = null;       // temp storage before confirm
-let pendingLibraryCategory = null;   // selected category for library save
-let pendingDelete = null;            // { type: "today" | "library" | "resetToday", index: number }
-let suppressLibraryClick = false;    // prevents auto-click after saving
-
-
-// ------------------------------
-// DOM Elements
-// ------------------------------
-const foodName = document.getElementById("foodName");
-const calories = document.getElementById("calories");
-const fat = document.getElementById("fat");
-const carbs = document.getElementById("carbs");
-const multiplierInput = document.getElementById("multiplier");
-
-const addButton = document.getElementById("addButton");
-const multiplyButton = document.getElementById("multiplyButton");
-const saveToLibraryButton = document.getElementById("saveToLibraryButton");
-
-const multiplierPopup = document.getElementById("multiplierPopup");
-const multiplierEntry = document.getElementById("multiplierEntry");
-const multiplierOk = document.getElementById("multiplierOk");
-const multiplierCancel = document.getElementById("multiplierCancel");
-
-const libraryConfirmPopup = document.getElementById("libraryConfirmPopup");
-const libraryConfirmText = document.getElementById("libraryConfirmText");
-const libraryYes = document.getElementById("libraryYes");
-const libraryNo = document.getElementById("libraryNo");
-
-const deleteConfirmPopup = document.getElementById("deleteConfirmPopup");
-const deleteConfirmText = document.getElementById("deleteConfirmText");
-const deleteYes = document.getElementById("deleteYes");
-const deleteNo = document.getElementById("deleteNo");
-
-const libraryList = document.getElementById("libraryList");
-const librarySearch = document.getElementById("librarySearch");
-
-const totalCalories = document.getElementById("totalCalories");
-const totalFat = document.getElementById("totalFat");
-const totalCarbs = document.getElementById("totalCarbs");
-const entryList = document.getElementById("entryList");
-
-const categoryButtons = document.querySelectorAll(".category-button");
-
-
-// ------------------------------
-// Title Button: Reset Today (with confirmation)
-// ------------------------------
-document.getElementById("titleButton").addEventListener("click", () => {
-  pendingDelete = { type: "resetToday" };
-  deleteConfirmText.textContent = "Reset Today’s Totals and Entries?";
-  deleteConfirmPopup.classList.remove("hidden");
-  deleteConfirmPopup.scrollIntoView({ behavior: "smooth", block: "center" });
-});
-
-
-// ------------------------------
-// Multiplier Popup Logic
-// ------------------------------
-multiplyButton.addEventListener("click", () => {
-  multiplierEntry.value = "";
-  multiplierPopup.classList.remove("hidden");
-});
-
-multiplierOk.addEventListener("click", () => {
-  let value = parseFloat(multiplierEntry.value);
-  if (isNaN(value) || value <= 0) value = 1;
-  multiplierInput.value = value;
-  multiplierPopup.classList.add("hidden");
-});
-
-multiplierCancel.addEventListener("click", () => {
-  multiplierPopup.classList.add("hidden");
-});
-
-
-// ------------------------------
-// Add Food Entry
-// ------------------------------
-addButton.addEventListener("click", () => {
-  const name = foodName.value.trim();
-  const cal = parseFloat(calories.value) || 0;
-  const f = parseFloat(fat.value) || 0;
-  const c = parseFloat(carbs.value) || 0;
-  const mult = parseFloat(multiplierInput.value) || 1;
-
-  if (!name) return;
-
-  const entry = {
-    name,
-    calories: cal * mult,
-    fat: f * mult,
-    carbs: c * mult
-  };
-
-  todaysEntries.push(entry);
-  updateTotals();
-  renderEntries();
-
-  multiplierInput.value = 1;
-
-  foodName.value = "";
-  calories.value = "";
-  fat.value = "";
-  carbs.value = "";
-});
-
-
-// ------------------------------
-// Save to Library (with category + confirm)
-// ------------------------------
-saveToLibraryButton.addEventListener("click", () => {
-  const name = foodName.value.trim();
-  const cal = parseFloat(calories.value) || 0;
-  const f = parseFloat(fat.value) || 0;
-  const c = parseFloat(carbs.value) || 0;
-
-  if (!name) return;
-
-  pendingLibraryItem = { baseName: name, calories: cal, fat: f, carbs: c };
-  pendingLibraryCategory = null;
-
-  categoryButtons.forEach(btn => btn.classList.remove("selected-category"));
-});
-
-
-// Category selection for library save
-categoryButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    if (!pendingLibraryItem) return;
-
-    pendingLibraryCategory = btn.getAttribute("data-category");
-
-    categoryButtons.forEach(b => b.classList.remove("selected-category"));
-    btn.classList.add("selected-category");
-
-    const fullName = `${pendingLibraryItem.baseName} (${pendingLibraryCategory})`;
-    libraryConfirmText.textContent = `Confirm save:\n${fullName}`;
-    libraryConfirmPopup.classList.remove("hidden");
-  });
-});
-
-
-// Confirm Yes/No for library save
-libraryYes.addEventListener("click", () => {
-  if (!pendingLibraryItem || !pendingLibraryCategory) {
-    libraryConfirmPopup.classList.add("hidden");
-    return;
-  }
-
-  const fullName = `${pendingLibraryItem.baseName} (${pendingLibraryCategory})`;
-
-  foodLibrary.push({
-    name: fullName,
-    calories: pendingLibraryItem.calories,
-    fat: pendingLibraryItem.fat,
-    carbs: pendingLibraryItem.carbs
-  });
-
-  localStorage.setItem("foodLibrary", JSON.stringify(foodLibrary));
-
-  pendingLibraryItem = null;
-  pendingLibraryCategory = null;
-  libraryConfirmPopup.classList.add("hidden");
-
-  categoryButtons.forEach(btn => btn.classList.remove("selected-category"));
-
-  renderLibrary();
-
-  // Clear input fields
-  foodName.value = "";
-  calories.value = "";
-  fat.value = "";
-  carbs.value = "";
-
-  // Prevent auto-click from refilling fields
-  suppressLibraryClick = true;
-  setTimeout(() => suppressLibraryClick = false, 300);
-});
-
-
-libraryNo.addEventListener("click", () => {
-  pendingLibraryItem = null;
-  pendingLibraryCategory = null;
-  libraryConfirmPopup.classList.add("hidden");
-  categoryButtons.forEach(btn => btn.classList.remove("selected-category"));
-});
-
-
-// ------------------------------
-// Double‑Tap Helper
-// ------------------------------
-function addDoubleTapListener(element, callback) {
-  let lastTap = 0;
-  element.addEventListener("click", () => {
-    const now = Date.now();
-    if (now - lastTap < 300) callback();
-    lastTap = now;
-  });
+function saveEntries() {
+    localStorage.setItem("nutritionEntries", JSON.stringify(entries));
 }
 
+// -------------------------------
+// Load Food Library
+// -------------------------------
+let foodLibrary = JSON.parse(localStorage.getItem("foodLibrary")) || [];
 
-// ------------------------------
-// Delete Confirm Yes/No
-// ------------------------------
-deleteYes.addEventListener("click", () => {
-  if (!pendingDelete) return;
-
-  // Delete today's entry
-  if (pendingDelete.type === "today") {
-    todaysEntries.splice(pendingDelete.index, 1);
-    updateTotals();
-    renderEntries();
-  }
-
-  // Delete library item
-  if (pendingDelete.type === "library") {
-    foodLibrary.splice(pendingDelete.index, 1);
+function saveLibrary() {
     localStorage.setItem("foodLibrary", JSON.stringify(foodLibrary));
-    renderLibrary();
-  }
-
-  // Reset today's totals + entries
-  if (pendingDelete.type === "resetToday") {
-    todaysEntries = [];
-    updateTotals();
-    renderEntries();
-    multiplierInput.value = 1;
-  }
-
-  pendingDelete = null;
-  deleteConfirmPopup.classList.add("hidden");
-});
-
-deleteNo.addEventListener("click", () => {
-  pendingDelete = null;
-  deleteConfirmPopup.classList.add("hidden");
-});
-
-
-// ------------------------------
-// Update Totals
-// ------------------------------
-function updateTotals() {
-  let cal = 0, f = 0, c = 0;
-
-  todaysEntries.forEach(item => {
-    cal += item.calories;
-    f += item.fat;
-    c += item.carbs;
-  });
-
-  totalCalories.textContent = cal.toFixed(2);
-  totalFat.textContent = f.toFixed(2);
-  totalCarbs.textContent = c.toFixed(2);
 }
 
+// -------------------------------
+// Daily totals history and rollover
+// -------------------------------
+let dailyTotals = JSON.parse(localStorage.getItem("dailyTotals")) || [];
 
-// ------------------------------
-// Render Today's Entries
-// ------------------------------
-function renderEntries() {
-  entryList.innerHTML = "";
+function saveDailyTotals() {
+    localStorage.setItem("dailyTotals", JSON.stringify(dailyTotals));
+}
 
-  todaysEntries.forEach((item, index) => {
-    const li = document.createElement("li");
-    li.textContent = `${item.name} — ${item.calories} cal, ${item.fat}g fat, ${item.carbs}g carbs`;
+function getTodayDate() {
+    return new Date().toISOString().slice(0, 10);
+}
 
-    addDoubleTapListener(li, () => {
-      pendingDelete = { type: "today", index };
-      deleteConfirmText.textContent = "Delete this item?";
-      deleteConfirmPopup.classList.remove("hidden");
-      deleteConfirmPopup.scrollIntoView({ behavior: "smooth", block: "center" });
+function performDailyRollover() {
+    const today = getTodayDate();
+    let lastDate = localStorage.getItem("lastDate");
+
+    // First run: no lastDate yet
+    if (!lastDate) {
+        localStorage.setItem("lastDate", today);
+        return;
+    }
+
+    // Same day: nothing to do
+    if (lastDate === today) {
+        return;
+    }
+
+    // We have moved to a new day.
+    // Collect totals for all entries older than today, grouped by date.
+    const totalsByDate = {};
+
+    entries.forEach(entry => {
+        if (entry.date === today) return; // keep today's entries out of rollover
+
+        if (!totalsByDate[entry.date]) {
+            totalsByDate[entry.date] = {
+                date: entry.date,
+                calories: 0,
+                fat: 0,
+                carbs: 0
+            };
+        }
+
+        totalsByDate[entry.date].calories += entry.calories;
+        totalsByDate[entry.date].fat += entry.fat;
+        totalsByDate[entry.date].carbs += entry.carbs;
     });
 
-    entryList.appendChild(li);
-  });
+    // Merge computed totals into dailyTotals array (newest first)
+    Object.values(totalsByDate).forEach(dayTotals => {
+        const existingIndex = dailyTotals.findIndex(d => d.date === dayTotals.date);
+        if (existingIndex !== -1) {
+            dailyTotals[existingIndex] = dayTotals;
+        } else {
+            dailyTotals.push(dayTotals);
+        }
+    });
+
+    dailyTotals.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+    saveDailyTotals();
+
+    // Keep only today's entries in the main entries array
+    entries = entries.filter(entry => entry.date === today);
+    saveEntries();
+
+    // Update lastDate to today
+    localStorage.setItem("lastDate", today);
 }
 
+// Run rollover check on load so today starts clean if the date changed
+performDailyRollover();
 
-// ------------------------------
-// Render Library (sorted by category then name)
-// ------------------------------
-function renderLibrary(filter = "") {
-  libraryList.innerHTML = "";
+// -------------------------------
+// Add a new food entry
+// -------------------------------
+document.getElementById("addButton").addEventListener("click", () => {
+    const name = document.getElementById("foodName").value.trim();
+    const calories = Number(document.getElementById("calories").value);
+    const fat = Number(document.getElementById("fat").value);
+    const carbs = Number(document.getElementById("carbs").value);
 
-  const categoryOrder = ["Fruit", "Veg", "Meats", "Other"];
+    if (!name || isNaN(calories) || isNaN(fat) || isNaN(carbs)) {
+        alert("Please fill out all fields.");
+        return;
+    }
 
-  const filtered = foodLibrary
+    const entry = {
+        name,
+        calories,
+        fat,
+        carbs,
+        date: new Date().toISOString().slice(0, 10)
+    };
+
+    entries.push(entry);
+    saveEntries();
+    renderEntries();
+    updateTotals();
+
+    clearInputs();
+});
+
+// -------------------------------
+// Save current inputs to Food Library
+// -------------------------------
+document.getElementById("saveToLibraryButton").addEventListener("click", () => {
+    const name = document.getElementById("foodName").value.trim();
+    const calories = Number(document.getElementById("calories").value);
+    const fat = Number(document.getElementById("fat").value);
+    const carbs = Number(document.getElementById("carbs").value);
+
+    if (!name || isNaN(calories) || isNaN(fat) || isNaN(carbs)) {
+        alert("Please fill out all fields before saving to library.");
+        return;
+    }
+
+    const food = { name, calories, fat, carbs };
+    foodLibrary.push(food);
+    saveLibrary();
+    renderLibrary();
+
+    clearInputs();
+});
+
+// -------------------------------
+// Render Food Library (with search filter)
+// -------------------------------
+function renderLibrary() {
+    const list = document.getElementById("libraryList");
+    const search = document.getElementById("librarySearch").value.toLowerCase();
+
+    list.innerHTML = "";
+
+    foodLibrary
+        .filter(food => food.name.toLowerCase().includes(search))
+        .forEach((food, index) => {
+            const li = document.createElement("li");
+            li.textContent = `${food.name} — ${food.calories} cal, ${food.fat}g fat, ${food.carbs}g carbs`;
+
+            // Single tap → use food
+            li.addEventListener("click", () => {
+                useFoodFromLibrary(food);
+            });
+
+            // Double tap → delete food
+            li.addEventListener("dblclick", () => {
+                if (confirm(`Delete "${food.name}" from library?`)) {
+                    foodLibrary.splice(index, 1);
+                    saveLibrary();
+                    renderLibrary();
+                }
+            });
+
+            list.appendChild(li);
+        });
+}
+
+document.getElementById("librarySearch").addEventListener("input", renderLibrary);
+
+// -------------------------------
+// Auto-fill inputs when selecting a library item
+// -------------------------------
+function useFoodFromLibrary(food) {
+    document.getElementById("foodName").value = food.name;
+    document.getElementById("calories").value = food.calories;
+    document.getElementById("fat").value = food.fat;
+    document.getElementById("carbs").value = food.carbs;
+}
+
+// -------------------------------
+// Render today's entries (NOW WITH DOUBLE-TAP EDIT/DELETE)
+// -------------------------------
+function renderEntries() {
+    const today = new Date().toISOString().slice(0, 10);
+    const list = document.getElementById("entryList");
+    list.innerHTML = "";
+
+    entries
+        .map((e, index) => ({ ...e, index })) // keep index for editing
+        .filter(e => e.date === today)
+        .forEach(e => {
+            const li = document.createElement("li");
+            li.textContent = `${e.name} — ${e.calories} cal, ${e.fat}g fat, ${e.carbs}g carbs`;
+
+            // DOUBLE TAP → edit or delete
+            li.addEventListener("dblclick", () => {
+                const action = prompt(
+                    `Edit or Delete?\n\n` +
+                    `1 = Edit\n` +
+                    `2 = Delete\n\n` +
+                    `Entry: ${e.name} (${e.calories} cal)`
+                );
+
+                if (action === "1") {
+                    editEntry(e.index);
+                } else if (action === "2") {
+                    deleteEntry(e.index);
+                }
+            });
+
+            list.appendChild(li);
+        });
+}
+
+// -------------------------------
+// Edit an entry
+// -------------------------------
+function editEntry(index) {
+    const entry = entries[index];
+
+    const newName = prompt("Food name:", entry.name);
+    if (!newName) return;
+
+    const newCalories = Number(prompt("Calories:", entry.calories));
+    const newFat = Number(prompt("Fat (g):", entry.fat));
+    const newCarbs = Number(prompt("Carbs (g):", entry.carbs));
+
+    if (isNaN(newCalories) || isNaN(newFat) || isNaN(newCarbs)) {
+        alert("Invalid numbers.");
+        return;
+    }
+
+    entries[index] = {
+        ...entry,
+        name: newName,
+        calories: newCalories,
+        fat: newFat,
+        carbs: newCarbs
+    };
+
+    saveEntries();
+    renderEntries();
+    updateTotals();
+}
+
+// -------------------------------
+// Delete an entry
+// -------------------------------
+function deleteEntry(index) {
+    if (confirm("Delete this entry?")) {
+        entries.splice(index, 1);
+        saveEntries();
+        renderEntries();
+        updateTotals();
+    }
+}
+
+// -------------------------------
+// Update totals
+// -------------------------------
+function updateTotals() {
+    const today = new Date().toISOString().slice(0, 10);
+    const todayEntries = entries.filter(e => e.date === today);
+
+    const totalCalories = todayEntries.reduce((sum, e) => sum + e.calories, 0);
+    const totalFat = todayEntries.reduce((sum, e) => sum + e.fat, 0);
+    const totalCarbs = todayEntries.reduce((sum, e) => sum + e.carbs, 0);
+
+    document.getElementById("totalCalories").textContent = totalCalories.toFixed(2);
+    document.getElementById("totalFat").textContent = totalFat.toFixed(2);
+    document.getElementById("totalCarbs").textContent = totalCarbs.toFixed(2);
+
+}
+
+// -------------------------------
+// Utility
+// -------------------------------
+function clearInputs() {
+    document.getElementById("foodName").value = "";
+    document.getElementById("calories").value = "";
+    document.getElementById("fat").value = "";
+    document.getElementById("carbs").value = "";
+}
+
+// -------------------------------
+// Initial load (after rollover)
+// -------------------------------
+renderEntries();
+updateTotals();
+renderLibrary();
+
 
 
 
