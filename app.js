@@ -256,9 +256,10 @@ function updateTotals() {
     c += item.carbs;
   });
 
-  totalCalories.textContent = cal;
-  totalFat.textContent = f;
-  totalCarbs.textContent = c;
+  totalCalories.textContent = cal.toFixed(2);
+  totalFat.textContent = f.toFixed(2);
+  totalCarbs.textContent = c.toFixed(2);
+
 }
 
 
@@ -351,6 +352,7 @@ librarySearch.addEventListener("input", () => {
 
 // Initial load
 renderLibrary();
+
 
 
 
