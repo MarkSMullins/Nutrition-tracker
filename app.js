@@ -2,9 +2,7 @@
 // Data Storage
 // ------------------------------
 let foodLibrary = JSON.parse(localStorage.getItem("foodLibrary") || "[]");
-
-// Load today's entries from storage
-let todaysEntries = JSON.parse(localStorage.getItem("todaysEntries") || "[]");
+let todaysEntries = [];
 
 let pendingLibraryItem = null;       // temp storage before confirm
 let pendingLibraryCategory = null;   // selected category for library save
@@ -102,10 +100,6 @@ addButton.addEventListener("click", () => {
   };
 
   todaysEntries.push(entry);
-
-  // Save today's entries
-  localStorage.setItem("todaysEntries", JSON.stringify(todaysEntries));
-
   updateTotals();
   renderEntries();
 
@@ -221,10 +215,6 @@ deleteYes.addEventListener("click", () => {
   // Delete today's entry
   if (pendingDelete.type === "today") {
     todaysEntries.splice(pendingDelete.index, 1);
-
-    // Save updated list
-    localStorage.setItem("todaysEntries", JSON.stringify(todaysEntries));
-
     updateTotals();
     renderEntries();
   }
@@ -239,10 +229,6 @@ deleteYes.addEventListener("click", () => {
   // Reset today's totals + entries
   if (pendingDelete.type === "resetToday") {
     todaysEntries = [];
-
-    // Clear storage
-    localStorage.setItem("todaysEntries", "[]");
-
     updateTotals();
     renderEntries();
     multiplierInput.value = 1;
@@ -307,66 +293,7 @@ function renderLibrary(filter = "") {
   const categoryOrder = ["Fruit", "Veg", "Meats", "Other"];
 
   const filtered = foodLibrary
-    .filter(item => item.name.toLowerCase().includes(filter.toLowerCase()))
-    .slice()
-    .sort((a, b) => {
-      const catA = extractCategory(a.name);
-      const catB = extractCategory(b.name);
 
-      const idxA = categoryOrder.indexOf(catA);
-      const idxB = categoryOrder.indexOf(catB);
-
-      if (idxA !== idxB) return idxA - idxB;
-
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
-    });
-
-  filtered.forEach((item) => {
-    const realIndex = foodLibrary.indexOf(item);
-
-    const li = document.createElement("li");
-    li.textContent = `${item.name} — ${item.calories} cal`;
-
-    addDoubleTapListener(li, () => {
-      pendingDelete = { type: "library", index: realIndex };
-      deleteConfirmText.textContent = "Delete this item?";
-      deleteConfirmPopup.classList.remove("hidden");
-      deleteConfirmPopup.scrollIntoView({ behavior: "smooth", block: "center" });
-    });
-
-    li.addEventListener("click", () => {
-      if (suppressLibraryClick) return;
-
-      foodName.value = item.name;
-      calories.value = item.calories;
-      fat.value = item.fat;
-      carbs.value = item.carbs;
-    });
-
-    libraryList.appendChild(li);
-  });
-}
-
-
-function extractCategory(name) {
-  const match = name.match(/\((.*?)\)$/);
-  return match ? match[1] : "Other";
-}
-
-
-librarySearch.addEventListener("input", () => {
-  renderLibrary(librarySearch.value);
-});
-
-
-// Initial load
-updateTotals();
-renderEntries();
-renderLibrary();
 
 
 
