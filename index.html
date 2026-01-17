@@ -1,120 +1,72 @@
+<!--index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nutrition Tracker</title>
+  <title>Daily Nutrition Tracker</title>
+
+  <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#4CAF50" />
 </head>
 
 <body>
 
-  <header>
-    <h1>Nutrition Tracker</h1>
-    <button id="titleButton" class="reset-button">Reset Today</button>
-  </header>
+  <h1>Daily Nutrition Tracker</h1>
 
-  <section class="card">
+  <!-- Today's Totals -->
+  <section id="totals">
+    <h2>Today's Totals</h2>
+    <div class="total-row"><span>Calories:</span> <span id="totalCalories">0</span></div>
+    <div class="total-row"><span>Fat (g):</span> <span id="totalFat">0</span></div>
+    <div class="total-row"><span>Carbs (g):</span> <span id="totalCarbs">0</span></div>
+  </section>
+
+  <!-- Add Food -->
+  <section id="addFood">
     <h2>Add Food</h2>
+    <input id="foodName" type="text" placeholder="Food name" />
+    <input id="calories" type="number" placeholder="Calories" />
+    <input id="fat" type="number" placeholder="Fat (g)" />
+    <input id="carbs" type="number" placeholder="Carbs (g)" />
+    <button id="addButton">Add</button>
+    <button id="saveToLibraryButton">Save to Library</button>
+  </section>
 
-    <div class="input-row">
-      <label>Name</label>
-      <input id="foodName" type="text" />
-    </div>
-
-    <div class="input-row">
-      <label>Calories</label>
-      <input id="calories" type="number" />
-    </div>
-
-    <div class="input-row">
-      <label>Fat (g)</label>
-      <input id="fat" type="number" />
-    </div>
-
-    <div class="input-row">
-      <label>Carbs (g)</label>
-      <input id="carbs" type="number" />
-    </div>
-
-    <div class="multiplier-row">
-      <label>Multiplier</label>
-      <input id="multiplier" type="number" value="1" readonly />
-      <button id="multiplyButton" class="small-button">×</button>
-    </div>
-
-    <div class="button-row">
-      <button id="addButton" class="primary">Add</button>
-      <button id="saveToLibraryButton" class="secondary">Save to Library</button>
+  <!-- Food Library -->
+  <section id="foodLibrary">
+    <h2>Food Library</h2>
+    <input id="librarySearch" type="text" placeholder="Search foods..." />
+    <div id="libraryScroll">
+      <ul id="libraryList"></ul>
     </div>
   </section>
 
-  <section class="card">
-    <h2>Today</h2>
-
-    <div class="totals">
-      <div><strong>Calories:</strong> <span id="totalCalories">0</span></div>
-      <div><strong>Fat:</strong> <span id="totalFat">0</span></div>
-      <div><strong>Carbs:</strong> <span id="totalCarbs">0</span></div>
-    </div>
-
-    <ul id="entryList" class="list"></ul>
+  <!-- Today's Entries -->
+  <section id="entries">
+    <h2>Today's Entries</h2>
+    <ul id="entryList"></ul>
   </section>
 
-  <section class="card">
-    <h2>Library</h2>
+  <!-- App Logic -->
+  <script src="app.js"></script>
 
-    <input id="librarySearch" type="text" placeholder="Search…" class="search-box" />
+  <!-- Service Worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js")
+        .then(() => console.log("Service Worker registered"))
+        .catch(err => console.error("Service Worker failed:", err));
+    }
+  </script>
 
-    <div class="category-row">
-      <button class="category-button" data-category="Fruit">Fruit</button>
-      <button class="category-button" data-category="Veg">Veg</button>
-      <button class="category-button" data-category="Meats">Meats</button>
-      <button class="category-button" data-category="Other">Other</button>
-    </div>
-
-    <ul id="libraryList" class="list"></ul>
-  </section>
-
-  <!-- Multiplier Popup -->
-  <div id="multiplierPopup" class="popup hidden">
-    <div class="popup-content">
-      <h3>Multiplier</h3>
-      <input id="multiplierEntry" type="number" />
-      <div class="popup-buttons">
-        <button id="multiplierOk" class="primary">OK</button>
-        <button id="multiplierCancel" class="secondary">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Library Confirm Popup -->
-  <div id="libraryConfirmPopup" class="popup hidden">
-    <div class="popup-content">
-      <h3>Save to Library</h3>
-      <pre id="libraryConfirmText"></pre>
-      <div class="popup-buttons">
-        <button id="libraryYes" class="primary">Yes</button>
-        <button id="libraryNo" class="secondary">No</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Delete Confirm Popup -->
-  <div id="deleteConfirmPopup" class="popup hidden">
-    <div class="popup-content">
-      <h3>Confirm Delete</h3>
-      <pre id="deleteConfirmText"></pre>
-      <div class="popup-buttons">
-        <button id="deleteYes" class="danger">Delete</button>
-        <button id="deleteNo" class="secondary">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="index.js"></script>
 </body>
 </html>
+
 
 
 
