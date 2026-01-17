@@ -1,151 +1,197 @@
+/* ------------------------------
+   Global
+------------------------------ */
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 10px;
-  background: #f5f5f5;
-}
-
-h2 {
   margin: 0;
   padding: 0;
+  font-family: system-ui, sans-serif;
+  background: #fafafa;
+  color: #333;
 }
 
-/* Title button */
-.title-button {
+h1, h2, h3 {
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+
+header {
+  background: #ffffff;
+  padding: 15px;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 12px;
-  background: #4CAF50;
-  color: white;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.reset-button {
+  background: #ffb3b3;
   border: none;
+  padding: 8px 14px;
   border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.reset-button:hover {
+  background: #ff9a9a;
+}
+
+/* ------------------------------
+   Cards
+------------------------------ */
+.card {
+  background: #ffffff;
+  margin: 15px;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+/* ------------------------------
+   Inputs
+------------------------------ */
+.input-row, .multiplier-row {
   margin-bottom: 12px;
 }
 
-.title-button:active {
-  opacity: 0.7;
-}
-
-/* Section header */
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-/* Allow popups to expand */
-#addFood {
-  overflow: visible;
-}
-
-/* 2×2 grid */
-.category-grid {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  grid-template-rows: repeat(2, auto);
-  gap: 4px;
-}
-
-.category-button,
-.library-category-button {
-  padding: 6px 10px;
+label {
+  display: block;
+  margin-bottom: 4px;
   font-size: 14px;
-  background: #2196F3;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  min-width: 60px;
-  text-align: center;
 }
 
-/* Inputs */
 input[type="text"],
 input[type="number"] {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-}
-
-/* Action buttons */
-.action-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 6px;
-  margin-top: 6px;
-  margin-bottom: 10px;
-}
-
-.action-row button {
-  flex: 1;
-  padding: 10px;
-  font-size: 16px;
-  background: #1976D2;
-  color: white;
-  border: none;
-  border-radius: 4px;
-}
-
-/* Multiplier popup */
-.multiplier-popup {
-  background: white;
-  border: 2px solid #1976D2;
+  padding: 8px;
+  border: 1px solid #ddd;
   border-radius: 6px;
-  padding: 12px;
-  width: 200px;
-  margin-top: 10px;
+  font-size: 16px;
+  background: #fff;
+}
+
+.search-box {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+/* ------------------------------
+   Buttons
+------------------------------ */
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 15px;
+}
+
+.primary {
+  background: #8ed1c6; /* mint */
+  color: #fff;
+}
+
+.primary:hover {
+  background: #7ac3b7;
+}
+
+.secondary {
+  background: #e8e8e8;
+}
+
+.secondary:hover {
+  background: #dcdcdc;
+}
+
+.danger {
+  background: #ff7a7a;
+  color: #fff;
+}
+
+.danger:hover {
+  background: #ff5f5f;
+}
+
+.small-button {
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+/* ------------------------------
+   Category Buttons
+------------------------------ */
+.category-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.category-button {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  background: #f3f3f3;
+}
+
+.category-button[data-category="Fruit"] { background: #ffd8c2; }
+.category-button[data-category="Veg"]   { background: #c8f2d2; }
+.category-button[data-category="Meats"] { background: #e3d4f9; }
+.category-button[data-category="Other"] { background: #eaeaea; }
+
+.selected-category {
+  outline: 3px solid #888;
+}
+
+/* ------------------------------
+   Lists
+------------------------------ */
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list li {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 15px;
+}
+
+/* ------------------------------
+   Popups
+------------------------------ */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.popup-content {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 350px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .popup-buttons {
   display: flex;
   justify-content: space-between;
-  margin-top: 8px;
-}
-
-/* Library confirm popup + Delete popup */
-.library-confirm-popup {
-  background: white;
-  border: 2px solid #4CAF50;
-  border-radius: 6px;
-  padding: 12px;
-  width: 240px;
-  margin-top: 10px;
-
-  /* Critical fixes */
-  position: relative;
-  z-index: 999;
-}
-
-/* Hidden utility */
-.hidden {
-  display: none;
-}
-
-/* Library scroll */
-#libraryScroll {
-  max-height: 200px;
-  overflow-y: auto;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-#libraryList li {
-  padding: 8px;
-  border-bottom: 1px solid #ddd;
-}
-
-/* Today's entries */
-#entryList li {
-  padding: 8px;
-  background: white;
-  border-bottom: 1px solid #ddd;
+  margin-top: 15px;
 }
 
 
