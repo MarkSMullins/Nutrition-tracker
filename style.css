@@ -1,8 +1,4 @@
-/*style.css 
-
-/* -------------------------------
-   Global Layout
---------------------------------*/
+/* Global */
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
@@ -15,9 +11,7 @@ h1 {
     margin-bottom: 25px;
 }
 
-/* -------------------------------
-   Section Containers
---------------------------------*/
+/* Sections */
 section {
     background: white;
     padding: 15px;
@@ -26,9 +20,7 @@ section {
     box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 
-/* -------------------------------
-   Inputs & Buttons
---------------------------------*/
+/* Inputs & Buttons */
 input {
     width: 100%;
     padding: 10px;
@@ -55,9 +47,24 @@ button:hover {
     background: #005fa3;
 }
 
-/* -------------------------------
-   Totals
---------------------------------*/
+/* Danger button */
+.dangerButton {
+    background: #d9534f;
+    width: auto;
+    padding: 8px 14px;
+    margin-left: 10px;
+}
+.dangerButton:hover {
+    background: #b52b27;
+}
+
+/* Totals */
+#totalsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .total-row {
     display: flex;
     justify-content: space-between;
@@ -65,18 +72,46 @@ button:hover {
     font-size: 1.1rem;
 }
 
-/* -------------------------------
-   Entries List
---------------------------------*/
+/* Add Food Header Layout */
+#addFoodHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* Category Grid */
+#categoryGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    grid-template-rows: repeat(2, 40px);
+    gap: 6px;
+}
+
+.catButton {
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+/* Category Colors */
+.catMeat { background: #b22222; }
+.catVeg { background: #228b22; }
+.catFruit { background: #ff8c00; }
+
+.catDairy { background: #1e90ff; }
+.catGrains { background: #cd853f; }
+.catOther { background: #6a5acd; }
+
+/* Entries List */
 #entryList li {
     padding: 6px 0;
     border-bottom: 1px solid #ddd;
     font-size: 1rem;
 }
 
-/* -------------------------------
-   Food Library
---------------------------------*/
+/* Food Library */
 #libraryScroll {
     max-height: 200px;
     overflow-y: auto;
@@ -102,6 +137,7 @@ button:hover {
     margin-bottom: 8px;
     font-size: 1rem;
 }
+
 
 
 
