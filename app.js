@@ -1,26 +1,17 @@
-// --app.js------------------------
 // Load existing entries
-// -------------------------------
 let entries = JSON.parse(localStorage.getItem("nutritionEntries")) || [];
-
 function saveEntries() {
     localStorage.setItem("nutritionEntries", JSON.stringify(entries));
 }
 
-// -------------------------------
 // Load Food Library
-// -------------------------------
 let foodLibrary = JSON.parse(localStorage.getItem("foodLibrary")) || [];
-
 function saveLibrary() {
     localStorage.setItem("foodLibrary", JSON.stringify(foodLibrary));
 }
 
-// -------------------------------
-// Daily totals history and rollover
-// -------------------------------
+// Daily totals history
 let dailyTotals = JSON.parse(localStorage.getItem("dailyTotals")) || [];
-
 function saveDailyTotals() {
     localStorage.setItem("dailyTotals", JSON.stringify(dailyTotals));
 }
@@ -33,23 +24,17 @@ function performDailyRollover() {
     const today = getTodayDate();
     let lastDate = localStorage.getItem("lastDate");
 
-    // First run: no lastDate yet
     if (!lastDate) {
         localStorage.setItem("lastDate", today);
         return;
     }
 
-    // Same day: nothing to do
-    if (lastDate === today) {
-        return;
-    }
+    if (lastDate === today) return;
 
-    // We have moved to a new day.
-    // Collect totals for all entries older than today, grouped by date.
     const totalsByDate = {};
 
     entries.forEach(entry => {
-        if (entry.date === today) return; // keep today's entries out of rollover
+        if (entry.date === today) return;
 
         if (!totalsByDate[entry.date]) {
             totalsByDate[entry.date] = {
@@ -65,7 +50,6 @@ function performDailyRollover() {
         totalsByDate[entry.date].carbs += entry.carbs;
     });
 
-    // Merge computed totals into dailyTotals array (newest first)
     Object.values(totalsByDate).forEach(dayTotals => {
         const existingIndex = dailyTotals.findIndex(d => d.date === dayTotals.date);
         if (existingIndex !== -1) {
@@ -75,23 +59,18 @@ function performDailyRollover() {
         }
     });
 
-    dailyTotals.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+    dailyTotals.sort((a, b) => (a.date < b.date ? 1 : -1));
     saveDailyTotals();
 
-    // Keep only today's entries in the main entries array
     entries = entries.filter(entry => entry.date === today);
     saveEntries();
 
-    // Update lastDate to today
     localStorage.setItem("lastDate", today);
 }
 
-// Run rollover check on load so today starts clean if the date changed
 performDailyRollover();
 
-// -------------------------------
-// Add a new food entry
-// -------------------------------
+// Add entry
 document.getElementById("addButton").addEventListener("click", () => {
     const name = document.getElementById("foodName").value.trim();
     const calories = Number(document.getElementById("calories").value);
@@ -108,20 +87,17 @@ document.getElementById("addButton").addEventListener("click", () => {
         calories,
         fat,
         carbs,
-        date: new Date().toISOString().slice(0, 10)
+        date: getTodayDate()
     };
 
     entries.push(entry);
     saveEntries();
     renderEntries();
     updateTotals();
-
     clearInputs();
 });
 
-// -------------------------------
-// Save current inputs to Food Library
-// -------------------------------
+// Save to library
 document.getElementById("saveToLibraryButton").addEventListener("click", () => {
     const name = document.getElementById("foodName").value.trim();
     const calories = Number(document.getElementById("calories").value);
@@ -137,13 +113,10 @@ document.getElementById("saveToLibraryButton").addEventListener("click", () => {
     foodLibrary.push(food);
     saveLibrary();
     renderLibrary();
-
     clearInputs();
 });
 
-// -------------------------------
-// Render Food Library (with search filter)
-// -------------------------------
+// Render library
 function renderLibrary() {
     const list = document.getElementById("libraryList");
     const search = document.getElementById("librarySearch").value.toLowerCase();
@@ -156,12 +129,8 @@ function renderLibrary() {
             const li = document.createElement("li");
             li.textContent = `${food.name} — ${food.calories} cal, ${food.fat}g fat, ${food.carbs}g carbs`;
 
-            // Single tap → use food
-            li.addEventListener("click", () => {
-                useFoodFromLibrary(food);
-            });
+            li.addEventListener("click", () => useFoodFromLibrary(food));
 
-            // Double tap → delete food
             li.addEventListener("dblclick", () => {
                 if (confirm(`Delete "${food.name}" from library?`)) {
                     foodLibrary.splice(index, 1);
@@ -176,9 +145,7 @@ function renderLibrary() {
 
 document.getElementById("librarySearch").addEventListener("input", renderLibrary);
 
-// -------------------------------
-// Auto-fill inputs when selecting a library item
-// -------------------------------
+// Auto-fill from library
 function useFoodFromLibrary(food) {
     document.getElementById("foodName").value = food.name;
     document.getElementById("calories").value = food.calories;
@@ -186,44 +153,33 @@ function useFoodFromLibrary(food) {
     document.getElementById("carbs").value = food.carbs;
 }
 
-// -------------------------------
-// Render today's entries (NOW WITH DOUBLE-TAP EDIT/DELETE)
-// -------------------------------
+// Render entries
 function renderEntries() {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = getTodayDate();
     const list = document.getElementById("entryList");
     list.innerHTML = "";
 
     entries
-        .map((e, index) => ({ ...e, index })) // keep index for editing
+        .map((e, index) => ({ ...e, index }))
         .filter(e => e.date === today)
         .forEach(e => {
             const li = document.createElement("li");
             li.textContent = `${e.name} — ${e.calories} cal, ${e.fat}g fat, ${e.carbs}g carbs`;
 
-            // DOUBLE TAP → edit or delete
             li.addEventListener("dblclick", () => {
                 const action = prompt(
-                    `Edit or Delete?\n\n` +
-                    `1 = Edit\n` +
-                    `2 = Delete\n\n` +
-                    `Entry: ${e.name} (${e.calories} cal)`
+                    `Edit or Delete?\n\n1 = Edit\n2 = Delete\n\nEntry: ${e.name} (${e.calories} cal)`
                 );
 
-                if (action === "1") {
-                    editEntry(e.index);
-                } else if (action === "2") {
-                    deleteEntry(e.index);
-                }
+                if (action === "1") editEntry(e.index);
+                else if (action === "2") deleteEntry(e.index);
             });
 
             list.appendChild(li);
         });
 }
 
-// -------------------------------
-// Edit an entry
-// -------------------------------
+// Edit entry
 function editEntry(index) {
     const entry = entries[index];
 
@@ -252,9 +208,7 @@ function editEntry(index) {
     updateTotals();
 }
 
-// -------------------------------
-// Delete an entry
-// -------------------------------
+// Delete entry
 function deleteEntry(index) {
     if (confirm("Delete this entry?")) {
         entries.splice(index, 1);
@@ -264,11 +218,20 @@ function deleteEntry(index) {
     }
 }
 
-// -------------------------------
+// Clear today's totals (new feature)
+document.getElementById("clearTodayButton").addEventListener("click", () => {
+    if (!confirm("Clear all entries for today?")) return;
+
+    const today = getTodayDate();
+    entries = entries.filter(e => e.date !== today);
+    saveEntries();
+    renderEntries();
+    updateTotals();
+});
+
 // Update totals
-// -------------------------------
 function updateTotals() {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = getTodayDate();
     const todayEntries = entries.filter(e => e.date === today);
 
     const totalCalories = todayEntries.reduce((sum, e) => sum + e.calories, 0);
@@ -278,12 +241,9 @@ function updateTotals() {
     document.getElementById("totalCalories").textContent = totalCalories.toFixed(2);
     document.getElementById("totalFat").textContent = totalFat.toFixed(2);
     document.getElementById("totalCarbs").textContent = totalCarbs.toFixed(2);
-
 }
 
-// -------------------------------
 // Utility
-// -------------------------------
 function clearInputs() {
     document.getElementById("foodName").value = "";
     document.getElementById("calories").value = "";
@@ -291,12 +251,11 @@ function clearInputs() {
     document.getElementById("carbs").value = "";
 }
 
-// -------------------------------
-// Initial load (after rollover)
-// -------------------------------
+// Initial load
 renderEntries();
 updateTotals();
 renderLibrary();
+
 
 
 
