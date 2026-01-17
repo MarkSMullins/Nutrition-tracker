@@ -2,7 +2,9 @@
 // Data Storage
 // ------------------------------
 let foodLibrary = JSON.parse(localStorage.getItem("foodLibrary") || "[]");
-let todaysEntries = [];
+
+// Load today's entries from storage
+let todaysEntries = JSON.parse(localStorage.getItem("todaysEntries") || "[]");
 
 let pendingLibraryItem = null;       // temp storage before confirm
 let pendingLibraryCategory = null;   // selected category for library save
@@ -100,6 +102,10 @@ addButton.addEventListener("click", () => {
   };
 
   todaysEntries.push(entry);
+
+  // Save today's entries
+  localStorage.setItem("todaysEntries", JSON.stringify(todaysEntries));
+
   updateTotals();
   renderEntries();
 
@@ -215,6 +221,10 @@ deleteYes.addEventListener("click", () => {
   // Delete today's entry
   if (pendingDelete.type === "today") {
     todaysEntries.splice(pendingDelete.index, 1);
+
+    // Save updated list
+    localStorage.setItem("todaysEntries", JSON.stringify(todaysEntries));
+
     updateTotals();
     renderEntries();
   }
@@ -229,6 +239,10 @@ deleteYes.addEventListener("click", () => {
   // Reset today's totals + entries
   if (pendingDelete.type === "resetToday") {
     todaysEntries = [];
+
+    // Clear storage
+    localStorage.setItem("todaysEntries", "[]");
+
     updateTotals();
     renderEntries();
     multiplierInput.value = 1;
@@ -259,7 +273,6 @@ function updateTotals() {
   totalCalories.textContent = cal.toFixed(2);
   totalFat.textContent = f.toFixed(2);
   totalCarbs.textContent = c.toFixed(2);
-
 }
 
 
@@ -351,7 +364,10 @@ librarySearch.addEventListener("input", () => {
 
 
 // Initial load
+updateTotals();
+renderEntries();
 renderLibrary();
+
 
 
 
