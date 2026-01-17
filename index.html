@@ -1,125 +1,373 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Daily Nutrition Tracker</title>
+// ------------------------------
+// Data Storage
+// ------------------------------
+let foodLibrary = JSON.parse(localStorage.getItem("foodLibrary") || "[]");
 
-  <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#4CAF50" />
-</head>
+// Load today's entries from storage
+let todaysEntries = JSON.parse(localStorage.getItem("todaysEntries") || "[]");
 
-<body>
+let pendingLibraryItem = null;       // temp storage before confirm
+let pendingLibraryCategory = null;   // selected category for library save
+let pendingDelete = null;            // { type: "today" | "library" | "resetToday", index: number }
+let suppressLibraryClick = false;    // prevents auto-click after saving
 
-  <!-- Title Button -->
-  <button id="titleButton" class="title-button">
-    <div style="font-size:20px;">Daily Nutrition Tracker</div>
-    <div style="font-size:12px; opacity:0.8;">(press to clear)</div>
-  </button>
 
-  <!-- Totals -->
-  <section id="totals">
-    <h2>Today's Totals</h2>
-    <div class="total-row"><span>Calories:</span> <span id="totalCalories">0</span></div>
-    <div class="total-row"><span>Fat (g):</span> <span id="totalFat">0</span></div>
-    <div class="total-row"><span>Carbs (g):</span> <span id="totalCarbs">0</span></div>
-  </section>
+// ------------------------------
+// DOM Elements
+// ------------------------------
+const foodName = document.getElementById("foodName");
+const calories = document.getElementById("calories");
+const fat = document.getElementById("fat");
+const carbs = document.getElementById("carbs");
+const multiplierInput = document.getElementById("multiplier");
 
-  <!-- Add Food -->
-  <section id="addFood">
+const addButton = document.getElementById("addButton");
+const multiplyButton = document.getElementById("multiplyButton");
+const saveToLibraryButton = document.getElementById("saveToLibraryButton");
 
-    <div class="section-header">
-      <h2>Add Food</h2>
-      <div class="category-grid">
-        <button class="category-button" data-category="Fruit">Fruit</button>
-        <button class="category-button" data-category="Veg">Veg</button>
-        <button class="category-button" data-category="Meats">Meats</button>
-        <button class="category-button" data-category="Other">Other</button>
-      </div>
-    </div>
+const multiplierPopup = document.getElementById("multiplierPopup");
+const multiplierEntry = document.getElementById("multiplierEntry");
+const multiplierOk = document.getElementById("multiplierOk");
+const multiplierCancel = document.getElementById("multiplierCancel");
 
-    <input id="foodName" type="text" placeholder="Food name" />
-    <input id="calories" type="number" placeholder="Calories" />
-    <input id="fat" type="number" placeholder="Fat (g)" />
-    <input id="carbs" type="number" placeholder="Carbs (g)" />
+const libraryConfirmPopup = document.getElementById("libraryConfirmPopup");
+const libraryConfirmText = document.getElementById("libraryConfirmText");
+const libraryYes = document.getElementById("libraryYes");
+const libraryNo = document.getElementById("libraryNo");
 
-    <!-- Hidden multiplier -->
-    <input id="multiplier" type="number" value="1" style="display:none;" />
+const deleteConfirmPopup = document.getElementById("deleteConfirmPopup");
+const deleteConfirmText = document.getElementById("deleteConfirmText");
+const deleteYes = document.getElementById("deleteYes");
+const deleteNo = document.getElementById("deleteNo");
 
-    <!-- Action Buttons -->
-    <div class="action-row">
-      <button id="addButton">Add</button>
-      <button id="multiplyButton">Multiply</button>
-      <button id="saveToLibraryButton">Library</button>
-    </div>
+const libraryList = document.getElementById("libraryList");
+const librarySearch = document.getElementById("librarySearch");
 
-    <!-- Multiplier Popup -->
-    <div id="multiplierPopup" class="multiplier-popup hidden">
-      <label>Enter multiplier:</label>
-      <input id="multiplierEntry" type="number" step="0.1" min="0" />
-      <div class="popup-buttons">
-        <button id="multiplierOk">OK</button>
-        <button id="multiplierCancel">Cancel</button>
-      </div>
-    </div>
+const totalCalories = document.getElementById("totalCalories");
+const totalFat = document.getElementById("totalFat");
+const totalCarbs = document.getElementById("totalCarbs");
+const entryList = document.getElementById("entryList");
 
-    <!-- Library Confirm Popup -->
-    <div id="libraryConfirmPopup" class="library-confirm-popup hidden">
-      <div id="libraryConfirmText">Confirm save:</div>
-      <div class="popup-buttons">
-        <button id="libraryYes">Yes</button>
-        <button id="libraryNo">No</button>
-      </div>
-    </div>
-    <!-- Delete Confirm Popup -->
-    <div id="deleteConfirmPopup" class="library-confirm-popup hidden">
-      <div id="deleteConfirmText">Delete this item?</div>
-      <div class="popup-buttons">
-        <button id="deleteYes">Yes</button>
-        <button id="deleteNo">No</button>
-      </div>
-    </div>
-  </section>
+const categoryButtons = document.querySelectorAll(".category-button");
 
-  <!-- Food Library -->
-  <section id="foodLibrary">
 
-    <div class="section-header">
-      <h2>Food Library</h2>
-      <div class="category-grid">
-        <button class="library-category-button" data-category="Fruit">Fruit</button>
-        <button class="library-category-button" data-category="Veg">Veg</button>
-        <button class="library-category-button" data-category="Meats">Meats</button>
-        <button class="library-category-button" data-category="Other">Other</button>
-      </div>
-    </div>
+// ------------------------------
+// Title Button: Reset Today (with confirmation)
+// ------------------------------
+document.getElementById("titleButton").addEventListener("click", () => {
+  pendingDelete = { type: "resetToday" };
+  deleteConfirmText.textContent = "Reset Today’s Totals and Entries?";
+  deleteConfirmPopup.classList.remove("hidden");
+  deleteConfirmPopup.scrollIntoView({ behavior: "smooth", block: "center" });
+});
 
-    <input id="librarySearch" type="text" placeholder="Search foods..." />
 
-    <div id="libraryScroll">
-      <ul id="libraryList"></ul>
-    </div>
-  </section>
+// ------------------------------
+// Multiplier Popup Logic
+// ------------------------------
+multiplyButton.addEventListener("click", () => {
+  multiplierEntry.value = "";
+  multiplierPopup.classList.remove("hidden");
+});
 
-  <!-- Today's Entries -->
-  <section id="entries">
-    <h2>Today's Entries</h2>
-    <ul id="entryList"></ul>
-  </section>
+multiplierOk.addEventListener("click", () => {
+  let value = parseFloat(multiplierEntry.value);
+  if (isNaN(value) || value <= 0) value = 1;
+  multiplierInput.value = value;
+  multiplierPopup.classList.add("hidden");
+});
 
-  <script src="app.js"></script>
+multiplierCancel.addEventListener("click", () => {
+  multiplierPopup.classList.add("hidden");
+});
 
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("service-worker.js")
-        .then(() => console.log("Service Worker registered"))
-        .catch(err => console.error("Service Worker failed:", err));
-    }
-  </script>
 
-</body>
-</html>
+// ------------------------------
+// Add Food Entry
+// ------------------------------
+addButton.addEventListener("click", () => {
+  const name = foodName.value.trim();
+  const cal = parseFloat(calories.value) || 0;
+  const f = parseFloat(fat.value) || 0;
+  const c = parseFloat(carbs.value) || 0;
+  const mult = parseFloat(multiplierInput.value) || 1;
+
+  if (!name) return;
+
+  const entry = {
+    name,
+    calories: cal * mult,
+    fat: f * mult,
+    carbs: c * mult
+  };
+
+  todaysEntries.push(entry);
+
+  // Save today's entries
+  localStorage.setItem("todaysEntries", JSON.stringify(todaysEntries));
+
+  updateTotals();
+  renderEntries();
+
+  multiplierInput.value = 1;
+
+  foodName.value = "";
+  calories.value = "";
+  fat.value = "";
+  carbs.value = "";
+});
+
+
+// ------------------------------
+// Save to Library (with category + confirm)
+// ------------------------------
+saveToLibraryButton.addEventListener("click", () => {
+  const name = foodName.value.trim();
+  const cal = parseFloat(calories.value) || 0;
+  const f = parseFloat(fat.value) || 0;
+  const c = parseFloat(carbs.value) || 0;
+
+  if (!name) return;
+
+  pendingLibraryItem = { baseName: name, calories: cal, fat: f, carbs: c };
+  pendingLibraryCategory = null;
+
+  categoryButtons.forEach(btn => btn.classList.remove("selected-category"));
+});
+
+
+// Category selection for library save
+categoryButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (!pendingLibraryItem) return;
+
+    pendingLibraryCategory = btn.getAttribute("data-category");
+
+    categoryButtons.forEach(b => b.classList.remove("selected-category"));
+    btn.classList.add("selected-category");
+
+    const fullName = `${pendingLibraryItem.baseName} (${pendingLibraryCategory})`;
+    libraryConfirmText.textContent = `Confirm save:\n${fullName}`;
+    libraryConfirmPopup.classList.remove("hidden");
+  });
+});
+
+
+// Confirm Yes/No for library save
+libraryYes.addEventListener("click", () => {
+  if (!pendingLibraryItem || !pendingLibraryCategory) {
+    libraryConfirmPopup.classList.add("hidden");
+    return;
+  }
+
+  const fullName = `${pendingLibraryItem.baseName} (${pendingLibraryCategory})`;
+
+  foodLibrary.push({
+    name: fullName,
+    calories: pendingLibraryItem.calories,
+    fat: pendingLibraryItem.fat,
+    carbs: pendingLibraryItem.carbs
+  });
+
+  localStorage.setItem("foodLibrary", JSON.stringify(foodLibrary));
+
+  pendingLibraryItem = null;
+  pendingLibraryCategory = null;
+  libraryConfirmPopup.classList.add("hidden");
+
+  categoryButtons.forEach(btn => btn.classList.remove("selected-category"));
+
+  renderLibrary();
+
+  // Clear input fields
+  foodName.value = "";
+  calories.value = "";
+  fat.value = "";
+  carbs.value = "";
+
+  // Prevent auto-click from refilling fields
+  suppressLibraryClick = true;
+  setTimeout(() => suppressLibraryClick = false, 300);
+});
+
+
+libraryNo.addEventListener("click", () => {
+  pendingLibraryItem = null;
+  pendingLibraryCategory = null;
+  libraryConfirmPopup.classList.add("hidden");
+  categoryButtons.forEach(btn => btn.classList.remove("selected-category"));
+});
+
+
+// ------------------------------
+// Double‑Tap Helper
+// ------------------------------
+function addDoubleTapListener(element, callback) {
+  let lastTap = 0;
+  element.addEventListener("click", () => {
+    const now = Date.now();
+    if (now - lastTap < 300) callback();
+    lastTap = now;
+  });
+}
+
+
+// ------------------------------
+// Delete Confirm Yes/No
+// ------------------------------
+deleteYes.addEventListener("click", () => {
+  if (!pendingDelete) return;
+
+  // Delete today's entry
+  if (pendingDelete.type === "today") {
+    todaysEntries.splice(pendingDelete.index, 1);
+
+    // Save updated list
+    localStorage.setItem("todaysEntries", JSON.stringify(todaysEntries));
+
+    updateTotals();
+    renderEntries();
+  }
+
+  // Delete library item
+  if (pendingDelete.type === "library") {
+    foodLibrary.splice(pendingDelete.index, 1);
+    localStorage.setItem("foodLibrary", JSON.stringify(foodLibrary));
+    renderLibrary();
+  }
+
+  // Reset today's totals + entries
+  if (pendingDelete.type === "resetToday") {
+    todaysEntries = [];
+
+    // Clear storage
+    localStorage.setItem("todaysEntries", "[]");
+
+    updateTotals();
+    renderEntries();
+    multiplierInput.value = 1;
+  }
+
+  pendingDelete = null;
+  deleteConfirmPopup.classList.add("hidden");
+});
+
+deleteNo.addEventListener("click", () => {
+  pendingDelete = null;
+  deleteConfirmPopup.classList.add("hidden");
+});
+
+
+// ------------------------------
+// Update Totals
+// ------------------------------
+function updateTotals() {
+  let cal = 0, f = 0, c = 0;
+
+  todaysEntries.forEach(item => {
+    cal += item.calories;
+    f += item.fat;
+    c += item.carbs;
+  });
+
+  totalCalories.textContent = cal.toFixed(2);
+  totalFat.textContent = f.toFixed(2);
+  totalCarbs.textContent = c.toFixed(2);
+}
+
+
+// ------------------------------
+// Render Today's Entries
+// ------------------------------
+function renderEntries() {
+  entryList.innerHTML = "";
+
+  todaysEntries.forEach((item, index) => {
+    const li = document.createElement("li");
+    li.textContent = `${item.name} — ${item.calories} cal, ${item.fat}g fat, ${item.carbs}g carbs`;
+
+    addDoubleTapListener(li, () => {
+      pendingDelete = { type: "today", index };
+      deleteConfirmText.textContent = "Delete this item?";
+      deleteConfirmPopup.classList.remove("hidden");
+      deleteConfirmPopup.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    entryList.appendChild(li);
+  });
+}
+
+
+// ------------------------------
+// Render Library (sorted by category then name)
+// ------------------------------
+function renderLibrary(filter = "") {
+  libraryList.innerHTML = "";
+
+  const categoryOrder = ["Fruit", "Veg", "Meats", "Other"];
+
+  const filtered = foodLibrary
+    .filter(item => item.name.toLowerCase().includes(filter.toLowerCase()))
+    .slice()
+    .sort((a, b) => {
+      const catA = extractCategory(a.name);
+      const catB = extractCategory(b.name);
+
+      const idxA = categoryOrder.indexOf(catA);
+      const idxB = categoryOrder.indexOf(catB);
+
+      if (idxA !== idxB) return idxA - idxB;
+
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
+    });
+
+  filtered.forEach((item) => {
+    const realIndex = foodLibrary.indexOf(item);
+
+    const li = document.createElement("li");
+    li.textContent = `${item.name} — ${item.calories} cal`;
+
+    addDoubleTapListener(li, () => {
+      pendingDelete = { type: "library", index: realIndex };
+      deleteConfirmText.textContent = "Delete this item?";
+      deleteConfirmPopup.classList.remove("hidden");
+      deleteConfirmPopup.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    li.addEventListener("click", () => {
+      if (suppressLibraryClick) return;
+
+      foodName.value = item.name;
+      calories.value = item.calories;
+      fat.value = item.fat;
+      carbs.value = item.carbs;
+    });
+
+    libraryList.appendChild(li);
+  });
+}
+
+
+function extractCategory(name) {
+  const match = name.match(/\((.*?)\)$/);
+  return match ? match[1] : "Other";
+}
+
+
+librarySearch.addEventListener("input", () => {
+  renderLibrary(librarySearch.value);
+});
+
+
+// Initial load
+updateTotals();
+renderEntries();
+renderLibrary();
+
 
 
 
