@@ -6,7 +6,7 @@ let todaysEntries = [];
 
 let pendingLibraryItem = null;       // temp storage before confirm
 let pendingLibraryCategory = null;   // selected category for library save
-let pendingDelete = null;            // { type: "today" | "library", index: number }
+let pendingDelete = null;            // { type: "today" | "library" | "resetToday", index: number }
 let suppressLibraryClick = false;    // prevents auto-click after saving
 
 
@@ -50,13 +50,13 @@ const categoryButtons = document.querySelectorAll(".category-button");
 
 
 // ------------------------------
-// Title Button: Clear Today's Entries
+// Title Button: Reset Today (with confirmation)
 // ------------------------------
 document.getElementById("titleButton").addEventListener("click", () => {
-  todaysEntries = [];
-  updateTotals();
-  renderEntries();
-  multiplierInput.value = 1;
+  pendingDelete = { type: "resetToday" };
+  deleteConfirmText.textContent = "Reset Today’s Totals and Entries?";
+  deleteConfirmPopup.classList.remove("hidden");
+  deleteConfirmPopup.scrollIntoView({ behavior: "smooth", block: "center" });
 });
 
 
@@ -212,16 +212,26 @@ function addDoubleTapListener(element, callback) {
 deleteYes.addEventListener("click", () => {
   if (!pendingDelete) return;
 
+  // Delete today's entry
   if (pendingDelete.type === "today") {
     todaysEntries.splice(pendingDelete.index, 1);
     updateTotals();
     renderEntries();
   }
 
+  // Delete library item
   if (pendingDelete.type === "library") {
     foodLibrary.splice(pendingDelete.index, 1);
     localStorage.setItem("foodLibrary", JSON.stringify(foodLibrary));
     renderLibrary();
+  }
+
+  // Reset today's totals + entries
+  if (pendingDelete.type === "resetToday") {
+    todaysEntries = [];
+    updateTotals();
+    renderEntries();
+    multiplierInput.value = 1;
   }
 
   pendingDelete = null;
@@ -302,30 +312,29 @@ function renderLibrary(filter = "") {
     });
 
   filtered.forEach((item) => {
-  const realIndex = foodLibrary.indexOf(item);
+    const realIndex = foodLibrary.indexOf(item);
 
-  const li = document.createElement("li");
-  li.textContent = `${item.name} — ${item.calories} cal`;
+    const li = document.createElement("li");
+    li.textContent = `${item.name} — ${item.calories} cal`;
 
-  addDoubleTapListener(li, () => {
-    pendingDelete = { type: "library", index: realIndex };
-    deleteConfirmText.textContent = "Delete this item?";
-    deleteConfirmPopup.classList.remove("hidden");
-    deleteConfirmPopup.scrollIntoView({ behavior: "smooth", block: "center" });
+    addDoubleTapListener(li, () => {
+      pendingDelete = { type: "library", index: realIndex };
+      deleteConfirmText.textContent = "Delete this item?";
+      deleteConfirmPopup.classList.remove("hidden");
+      deleteConfirmPopup.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    li.addEventListener("click", () => {
+      if (suppressLibraryClick) return;
+
+      foodName.value = item.name;
+      calories.value = item.calories;
+      fat.value = item.fat;
+      carbs.value = item.carbs;
+    });
+
+    libraryList.appendChild(li);
   });
-
-  li.addEventListener("click", () => {
-    if (suppressLibraryClick) return;
-
-    foodName.value = item.name;
-    calories.value = item.calories;
-    fat.value = item.fat;
-    carbs.value = item.carbs;
-  });
-
-  libraryList.appendChild(li);
-});
-
 }
 
 
@@ -342,6 +351,7 @@ librarySearch.addEventListener("input", () => {
 
 // Initial load
 renderLibrary();
+
 
 
 
