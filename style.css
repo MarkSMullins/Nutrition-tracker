@@ -9,11 +9,10 @@ body {
 h1 {
     text-align: center;
     margin-bottom: 15px;
-    font-size: 1.4rem;   /* smaller title */
-    line-height: 1.2;    /* tighter spacing */
-    white-space: nowrap; /* forces single line */
+    font-size: 1.4rem;
+    line-height: 1.2;
+    white-space: nowrap;
 }
-
 
 /* Sections */
 section {
@@ -45,17 +44,7 @@ button {
     font-size: 16px;
     margin-top: 8px;
     cursor: pointer;
-}#addRow {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    margin-top: 8px;
 }
-
-#addRow button {
-    width: 50%;
-}
-
 
 button:hover {
     background: #005fa3;
@@ -70,15 +59,6 @@ button:hover {
 }
 .dangerButton:hover {
     background: #b52b27;
-}
-#addMultiplyRow {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-#addMultiplyRow button {
-    width: 50%;
 }
 
 /* Totals */
@@ -119,13 +99,11 @@ button:hover {
     cursor: pointer;
     opacity: 0.9;
 
-    /* Center the category name */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Selected category (Option 1: solid highlight) */
 .catButton.active {
     opacity: 1;
     outline: 3px solid #000;
@@ -139,6 +117,92 @@ button:hover {
 .catDairy { background: #1e90ff; }
 .catGrains { background: #cd853f; }
 .catOther { background: #6a5acd; }
+
+/* Add + Multiply row */
+#addRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+#addRow button {
+    width: 50%;
+}
+
+/* Multiplier keypad */
+.hidden {
+    display: none;
+}
+
+#multiplierPad {
+    margin-top: 10px;
+    padding: 10px;
+    background: #eef6ff;
+    border: 1px solid #aac7e8;
+    border-radius: 6px;
+}
+
+#multiplierDisplay {
+    width: 100%;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 8px;
+    font-size: 1.4rem;
+    text-align: right;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.padRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.padKey {
+    width: 30%;
+    padding: 10px;
+    font-size: 1.2rem;
+    background: #0078d4;
+    color: white;
+    border-radius: 5px;
+}
+
+.padKey:hover {
+    background: #005fa3;
+}
+
+#padBack {
+    background: #444;
+}
+
+#padBack:hover {
+    background: #222;
+}
+
+.padAction {
+    width: 48%;
+    padding: 10px;
+    font-size: 1.1rem;
+    border-radius: 5px;
+}
+
+.padAction.cancel {
+    background: #d9534f;
+}
+
+.padAction.cancel:hover {
+    background: #b52b27;
+}
+
+.padAction.ok {
+    background: #228b22;
+}
+
+.padAction.ok:hover {
+    background: #176b16;
+}
 
 /* Entries List */
 #entryList li {
@@ -173,6 +237,7 @@ button:hover {
     margin-bottom: 8px;
     font-size: 1rem;
 }
+
 
 
 
