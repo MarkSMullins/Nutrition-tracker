@@ -82,18 +82,24 @@ button:hover {
 /* Category Grid */
 #categoryGrid {
     display: grid;
-    grid-template-columns: repeat(3, 70px);
-    grid-template-rows: repeat(2, 35px);
+    grid-template-columns: repeat(3, 80px);
+    grid-template-rows: repeat(2, 40px);
     gap: 6px;
 }
 
+/* Category Buttons */
 .catButton {
     border-radius: 5px;
     color: white;
     font-weight: bold;
     border: none;
     cursor: pointer;
-    opacity: 0.6; /* default unselected */
+    opacity: 0.6;
+
+    /* Center the category name */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Selected category (Option 1: solid highlight) */
