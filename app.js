@@ -70,6 +70,18 @@ function performDailyRollover() {
 
 performDailyRollover();
 
+// Track selected category
+let selectedCategory = null;
+
+// Category button logic
+document.querySelectorAll(".catButton").forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelectorAll(".catButton").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        selectedCategory = btn.dataset.category;
+    });
+});
+
 // Add entry
 document.getElementById("addButton").addEventListener("click", () => {
     const name = document.getElementById("foodName").value.trim();
@@ -97,7 +109,7 @@ document.getElementById("addButton").addEventListener("click", () => {
     clearInputs();
 });
 
-// Save to library
+// Save to library (now requires category)
 document.getElementById("saveToLibraryButton").addEventListener("click", () => {
     const name = document.getElementById("foodName").value.trim();
     const calories = Number(document.getElementById("calories").value);
@@ -109,10 +121,27 @@ document.getElementById("saveToLibraryButton").addEventListener("click", () => {
         return;
     }
 
-    const food = { name, calories, fat, carbs };
+    if (!selectedCategory) {
+        alert("Please select a category before saving.");
+        return;
+    }
+
+    const food = { 
+        name, 
+        calories, 
+        fat, 
+        carbs,
+        category: selectedCategory
+    };
+
     foodLibrary.push(food);
     saveLibrary();
     renderLibrary();
+
+    // Reset category selection
+    selectedCategory = null;
+    document.querySelectorAll(".catButton").forEach(b => b.classList.remove("active"));
+
     clearInputs();
 });
 
@@ -127,7 +156,7 @@ function renderLibrary() {
         .filter(food => food.name.toLowerCase().includes(search))
         .forEach((food, index) => {
             const li = document.createElement("li");
-            li.textContent = `${food.name} — ${food.calories} cal, ${food.fat}g fat, ${food.carbs}g carbs`;
+            li.textContent = `${food.name} — ${food.calories} cal, ${food.fat}g fat, ${food.carbs}g carbs — [${food.category}]`;
 
             li.addEventListener("click", () => useFoodFromLibrary(food));
 
@@ -218,7 +247,7 @@ function deleteEntry(index) {
     }
 }
 
-// Clear today's totals (new feature)
+// Clear today's totals
 document.getElementById("clearTodayButton").addEventListener("click", () => {
     if (!confirm("Clear all entries for today?")) return;
 
@@ -255,6 +284,7 @@ function clearInputs() {
 renderEntries();
 updateTotals();
 renderLibrary();
+
 
 
 
