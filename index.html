@@ -47,13 +47,45 @@
     <input id="calories" type="number" placeholder="Calories" />
     <input id="fat" type="number" placeholder="Fat (g)" />
     <input id="carbs" type="number" placeholder="Carbs (g)" />
+
+    <!-- Add + Multiply row -->
     <div id="addRow">
-  	<button id="addButton">Add</button>
-  	<button id="multiplyButton">Multiply</button>
+      <button id="addButton">Add</button>
+      <button id="multiplyButton">Multiply</button>
     </div>
 
-<button id="saveToLibraryButton">Save to Library</button>
+    <!-- Multiplier keypad (hidden by default) -->
+    <div id="multiplierPad" class="hidden">
+      <div id="multiplierDisplay">0</div>
 
+      <div class="padRow">
+        <button class="padKey">1</button>
+        <button class="padKey">2</button>
+        <button class="padKey">3</button>
+      </div>
+      <div class="padRow">
+        <button class="padKey">4</button>
+        <button class="padKey">5</button>
+        <button class="padKey">6</button>
+      </div>
+      <div class="padRow">
+        <button class="padKey">7</button>
+        <button class="padKey">8</button>
+        <button class="padKey">9</button>
+      </div>
+      <div class="padRow">
+        <button class="padKey">.</button>
+        <button class="padKey">0</button>
+        <button class="padKey" id="padBack">←</button>
+      </div>
+
+      <div class="padRow">
+        <button id="padCancel" class="padAction cancel">Cancel</button>
+        <button id="padOK" class="padAction ok">OK</button>
+      </div>
+    </div>
+
+    <button id="saveToLibraryButton">Save to Library</button>
   </section>
 
   <!-- Food Library -->
@@ -83,6 +115,7 @@
 
 </body>
 </html>
+
 
 
 
