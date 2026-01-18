@@ -73,6 +73,62 @@ performDailyRollover();
 // Track selected category
 let selectedCategory = null;
 
+// MULTIPLIER LOGIC
+let currentMultiplier = 1;
+let multiplierInput = "";
+
+// Keypad elements
+const pad = document.getElementById("multiplierPad");
+const padDisplay = document.getElementById("multiplierDisplay");
+const padKeys = document.querySelectorAll(".padKey");
+const padBack = document.getElementById("padBack");
+const padCancel = document.getElementById("padCancel");
+const padOK = document.getElementById("padOK");
+
+// Show keypad
+document.getElementById("multiplyButton").addEventListener("click", () => {
+    multiplierInput = "";
+    padDisplay.textContent = "0";
+    pad.classList.remove("hidden");
+});
+
+// Keypad digit buttons
+padKeys.forEach(key => {
+    key.addEventListener("click", () => {
+        const val = key.textContent;
+
+        // Prevent multiple decimals
+        if (val === "." && multiplierInput.includes(".")) return;
+
+        multiplierInput += val;
+        padDisplay.textContent = multiplierInput || "0";
+    });
+});
+
+// Backspace
+padBack.addEventListener("click", () => {
+    multiplierInput = multiplierInput.slice(0, -1);
+    padDisplay.textContent = multiplierInput || "0";
+});
+
+// Cancel
+padCancel.addEventListener("click", () => {
+    currentMultiplier = 1;
+    multiplierInput = "";
+    pad.classList.add("hidden");
+});
+
+// OK
+padOK.addEventListener("click", () => {
+    const num = Number(multiplierInput);
+    if (!isNaN(num) && num > 0) {
+        currentMultiplier = num;
+    } else {
+        currentMultiplier = 1;
+    }
+    pad.classList.add("hidden");
+});
+
 // Category button logic
 document.querySelectorAll(".catButton").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -96,9 +152,9 @@ document.getElementById("addButton").addEventListener("click", () => {
 
     const entry = {
         name,
-        calories,
-        fat,
-        carbs,
+        calories: calories * currentMultiplier,
+        fat: fat * currentMultiplier,
+        carbs: carbs * currentMultiplier,
         date: getTodayDate()
     };
 
@@ -107,6 +163,9 @@ document.getElementById("addButton").addEventListener("click", () => {
     renderEntries();
     updateTotals();
     clearInputs();
+
+    // Reset multiplier
+    currentMultiplier = 1;
 });
 
 // Save to library (now requires category)
@@ -138,7 +197,6 @@ document.getElementById("saveToLibraryButton").addEventListener("click", () => {
     saveLibrary();
     renderLibrary();
 
-    // Reset category selection
     selectedCategory = null;
     document.querySelectorAll(".catButton").forEach(b => b.classList.remove("active"));
 
@@ -180,6 +238,9 @@ function useFoodFromLibrary(food) {
     document.getElementById("calories").value = food.calories;
     document.getElementById("fat").value = food.fat;
     document.getElementById("carbs").value = food.carbs;
+
+    // Reset multiplier when selecting a food
+    currentMultiplier = 1;
 }
 
 // Render entries
@@ -284,6 +345,7 @@ function clearInputs() {
 renderEntries();
 updateTotals();
 renderLibrary();
+
 
 
 
