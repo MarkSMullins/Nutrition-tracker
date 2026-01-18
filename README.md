@@ -3,11 +3,11 @@ A simple, fast, offline‑friendly nutrition tracker designed for everyday use.
 Built to run as a phone app (PWA) and optimized for quick food entry, daily totals, and a personal food library.
 
 📌 What This App Does
-- Tracks your daily calories, fat, and carbs
+- Tracks your daily calories, fat, and carbs to make informed decisions keep below calories or carbs. 
 - Lets you add foods manually or tap items from your personal food library
 - Supports categories (Meat, Veg, Fruit, Dairy, Grains, Other)
 - Includes a multiplier keypad for entering fractional servings (0.5, 1.5, 2, etc.)
-- Saves your daily totals history
+- Saves your daily totals history 
 - Works offline once installed on your phone
 
 📱 Installing the App (PWA) Progressive Web App
