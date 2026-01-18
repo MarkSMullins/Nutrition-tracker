@@ -14,7 +14,7 @@ h1 {
 /* Sections */
 section {
     background: white;
-    padding: 15px;
+    padding: 13px;
     margin-bottom: 20px;
     border-radius: 8px;
     box-shadow: 0 0 5px rgba(0,0,0,0.1);
@@ -33,13 +33,13 @@ input {
 
 button {
     width: 100%;
-    padding: 8px;
+    padding: 6px;
     background: #0078d4;
     color: white;
     border: none;
     border-radius: 5px;
     font-size: 16px;
-    margin-top: 6px;
+    margin-top: 4px;
     cursor: pointer;
 }
 
@@ -137,6 +137,7 @@ button:hover {
     margin-bottom: 8px;
     font-size: 1rem;
 }
+
 
 
 
