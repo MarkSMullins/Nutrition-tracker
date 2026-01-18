@@ -10,7 +10,7 @@ Built to run as a phone app (PWA) and optimized for quick food entry, daily tota
 - Saves your daily totals history
 - Works offline once installed on your phone
 
-📱 Installing the App (PWA)
+📱 Installing the App (PWA) Progressive Web App
 - Open the app in your phone’s browser
 - Tap the menu (⋮)
 - Choose “Add to Home Screen”
