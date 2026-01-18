@@ -33,7 +33,7 @@ input {
 
 button {
     width: 100%;
-    padding: 10px;
+    padding: 8px;
     background: #0078d4;
     color: white;
     border: none;
@@ -84,7 +84,7 @@ button:hover {
     display: grid;
     grid-template-columns: repeat(3, 65px);
     grid-template-rows: repeat(2, 30px);
-    gap: 4px;
+    gap: 2px;
 }
 
 /* Category Buttons */
@@ -94,7 +94,7 @@ button:hover {
     font-weight: bold;
     border: none;
     cursor: pointer;
-    opacity: 0.8;
+    opacity: 0.9;
 
     /* Center the category name */
     display: flex;
@@ -150,6 +150,7 @@ button:hover {
     margin-bottom: 8px;
     font-size: 1rem;
 }
+
 
 
 
