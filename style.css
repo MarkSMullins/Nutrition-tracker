@@ -61,6 +61,15 @@ button:hover {
 .dangerButton:hover {
     background: #b52b27;
 }
+#addMultiplyRow {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+#addMultiplyRow button {
+    width: 50%;
+}
 
 /* Totals */
 #totalsHeader {
@@ -154,6 +163,7 @@ button:hover {
     margin-bottom: 8px;
     font-size: 1rem;
 }
+
 
 
 
