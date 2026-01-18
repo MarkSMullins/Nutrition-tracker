@@ -33,7 +33,7 @@ input {
 
 button {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     background: #0078d4;
     color: white;
     border: none;
@@ -82,19 +82,19 @@ button:hover {
 /* Category Grid */
 #categoryGrid {
     display: grid;
-    grid-template-columns: repeat(3, 70px);
-    grid-template-rows: repeat(2, 35px);
-    gap: 6px;
+    grid-template-columns: repeat(3, 65px);
+    grid-template-rows: repeat(2, 30px);
+    gap: 4px;
 }
 
 /* Category Buttons */
 .catButton {
-    border-radius: 5px;
+    border-radius: 3px;
     color: white;
     font-weight: bold;
     border: none;
     cursor: pointer;
-    opacity: 0.6;
+    opacity: 0.8;
 
     /* Center the category name */
     display: flex;
@@ -150,6 +150,7 @@ button:hover {
     margin-bottom: 8px;
     font-size: 1rem;
 }
+
 
 
 
