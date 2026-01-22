@@ -20,55 +20,8 @@ function getTodayDate() {
     return new Date().toISOString().slice(0, 10);
 }
 
-function performDailyRollover() {
-    const today = getTodayDate();
-    let lastDate = localStorage.getItem("lastDate");
+// Daily rollover removed — entries persist normally
 
-    if (!lastDate) {
-        localStorage.setItem("lastDate", today);
-        return;
-    }
-
-    if (lastDate === today) return;
-
-    const totalsByDate = {};
-
-    entries.forEach(entry => {
-        if (entry.date === today) return;
-
-        if (!totalsByDate[entry.date]) {
-            totalsByDate[entry.date] = {
-                date: entry.date,
-                calories: 0,
-                fat: 0,
-                carbs: 0
-            };
-        }
-
-        totalsByDate[entry.date].calories += entry.calories;
-        totalsByDate[entry.date].fat += entry.fat;
-        totalsByDate[entry.date].carbs += entry.carbs;
-    });
-
-    Object.values(totalsByDate).forEach(dayTotals => {
-        const existingIndex = dailyTotals.findIndex(d => d.date === dayTotals.date);
-        if (existingIndex !== -1) {
-            dailyTotals[existingIndex] = dayTotals;
-        } else {
-            dailyTotals.push(dayTotals);
-        }
-    });
-
-    dailyTotals.sort((a, b) => (a.date < b.date ? 1 : -1));
-    saveDailyTotals();
-
-    entries = entries.filter(entry => entry.date === today);
-    saveEntries();
-
-    localStorage.setItem("lastDate", today);
-}
-
-performDailyRollover();
 
 // Track selected category
 let selectedCategory = null;
@@ -345,6 +298,7 @@ function clearInputs() {
 renderEntries();
 updateTotals();
 renderLibrary();
+
 
 
 
