@@ -60,6 +60,16 @@ button:hover {
 .dangerButton:hover {
     background: #b52b27;
 }
+#saveRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+#saveRow button {
+    width: 50%;
+}
 
 /* Totals */
 #totalsHeader {
@@ -237,6 +247,26 @@ button:hover {
     margin-bottom: 8px;
     font-size: 1rem;
 }
+#foodLibraryHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#recipeLibraryButton {
+    padding: 6px 10px;
+    background: #6a5acd;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+#recipeLibraryButton:hover {
+    background: #5848b0;
+}
+
 
 
 
