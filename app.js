@@ -321,10 +321,15 @@ async function loadFoodLibrary() {
 
     // If user already has a library, use it as the source of truth
     if (Array.isArray(stored) && stored.length > 0) {
-        foodLibrary = stored;
-        renderLibrary();
-        return;
-    }
+    foodLibrary = stored;
+    renderLibrary();
+    return;
+}
+
+// If stored exists but is empty, reload foods.json
+if (Array.isArray(stored) && stored.length === 0) {
+    // fall through to foods.json load
+}
 
     // Otherwise, try to seed from foods.json
     try {
@@ -351,6 +356,7 @@ async function loadFoodLibrary() {
 renderEntries();
 updateTotals();
 loadFoodLibrary();
+
 
 
 
