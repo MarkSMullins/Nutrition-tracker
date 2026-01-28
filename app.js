@@ -5,9 +5,33 @@ function saveEntries() {
 }
 
 // Load Food Library (will be filled from localStorage or foods.json)
-let foodLibrary = [];
-function saveLibrary() {
-    localStorage.setItem("foodLibrary", JSON.stringify(foodLibrary));
+async function loadFoodLibrary() {
+    let stored = JSON.parse(localStorage.getItem("foodLibrary")) || [];
+
+    // Always load foods.json as the base layer
+    let base = [];
+    try {
+        const response = await fetch("foods.json");
+        if (response.ok) {
+            base = await response.json();
+        }
+    } catch (err) {
+        console.error("Failed to load foods.json:", err);
+    }
+
+    // Merge base foods.json with user-added foods
+    // Rule: foods.json is primary; user foods override only if names match
+    const merged = [...base];
+
+    stored.forEach(userFood => {
+        const exists = merged.find(f => f.name === userFood.name);
+        if (!exists) merged.push(userFood);
+    });
+
+    // Save merged library
+    foodLibrary = merged;
+    saveLibrary();
+    renderLibrary();
 }
 
 // Daily totals history
@@ -356,6 +380,7 @@ if (Array.isArray(stored) && stored.length === 0) {
 renderEntries();
 updateTotals();
 loadFoodLibrary();
+
 
 
 
