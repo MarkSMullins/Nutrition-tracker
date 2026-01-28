@@ -167,7 +167,21 @@ function renderLibrary() {
 
     list.innerHTML = "";
 
-    foodLibrary
+    // Your preferred category order
+    const categoryOrder = ["Fruit", "Veg", "Meat", "Dairy", "Grains", "Other"];
+
+    // Sort by category first, then alphabetically
+    const sorted = [...foodLibrary].sort((a, b) => {
+        const catA = categoryOrder.indexOf(a.category);
+        const catB = categoryOrder.indexOf(b.category);
+
+        if (catA !== catB) return catA - catB;
+
+        return a.name.localeCompare(b.name);
+    });
+
+    // Render filtered + sorted list
+    sorted
         .filter(food => food.name.toLowerCase().includes(search))
         .forEach((food, index) => {
             const li = document.createElement("li");
@@ -334,6 +348,7 @@ async function loadFoodLibrary() {
 renderEntries();
 updateTotals();
 loadFoodLibrary();
+
 
 
 
