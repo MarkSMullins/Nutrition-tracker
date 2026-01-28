@@ -4,9 +4,9 @@ function saveEntries() {
     localStorage.setItem("nutritionEntries", JSON.stringify(entries));
 }
 
-// Load Food Library (will be filled from localStorage or foods.json)
+// Load Food Library (foods.json = master, user foods merged in)
 async function loadFoodLibrary() {
-    let stored = JSON.parse(localStorage.getItem("foodLibrary")) || [];
+    const stored = JSON.parse(localStorage.getItem("foodLibrary")) || [];
 
     // Always load foods.json as the base layer
     let base = [];
@@ -19,8 +19,7 @@ async function loadFoodLibrary() {
         console.error("Failed to load foods.json:", err);
     }
 
-    // Merge base foods.json with user-added foods
-    // Rule: foods.json is primary; user foods override only if names match
+    // Merge: foods.json first, user-added foods second
     const merged = [...base];
 
     stored.forEach(userFood => {
@@ -49,8 +48,6 @@ function getTodayDate() {
     return `${year}-${month}-${day}`;
 }
 
-// Daily rollover removed — entries persist normally
-
 // Track selected category
 let selectedCategory = null;
 
@@ -78,7 +75,6 @@ padKeys.forEach(key => {
     key.addEventListener("click", () => {
         const val = key.textContent;
 
-        // Prevent multiple decimals
         if (val === "." && multiplierInput.includes(".")) return;
 
         multiplierInput += val;
@@ -102,11 +98,7 @@ padCancel.addEventListener("click", () => {
 // OK
 padOK.addEventListener("click", () => {
     const num = Number(multiplierInput);
-    if (!isNaN(num) && num > 0) {
-        currentMultiplier = num;
-    } else {
-        currentMultiplier = 1;
-    }
+    currentMultiplier = (!isNaN(num) && num > 0) ? num : 1;
     pad.classList.add("hidden");
 });
 
@@ -380,6 +372,7 @@ if (Array.isArray(stored) && stored.length === 0) {
 renderEntries();
 updateTotals();
 loadFoodLibrary();
+
 
 
 
