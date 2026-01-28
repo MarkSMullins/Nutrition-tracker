@@ -1,0 +1,37 @@
+[
+  { "name": "Chicken Breast", "calories": 165, "fat": 3.6, "carbs": 0, "category": "Meat" },
+  { "name": "Ground Beef 85%", "calories": 250, "fat": 15, "carbs": 0, "category": "Meat" },
+  { "name": "Turkey Breast", "calories": 135, "fat": 1, "carbs": 0, "category": "Meat" },
+  { "name": "Pork Chop", "calories": 231, "fat": 14, "carbs": 0, "category": "Meat" },
+  { "name": "Salmon", "calories": 208, "fat": 13, "carbs": 0, "category": "Meat" },
+
+  { "name": "Broccoli", "calories": 55, "fat": 0.6, "carbs": 11, "category": "Veg" },
+  { "name": "Carrots", "calories": 41, "fat": 0.2, "carbs": 10, "category": "Veg" },
+  { "name": "Spinach", "calories": 23, "fat": 0.4, "carbs": 3.6, "category": "Veg" },
+  { "name": "Green Beans", "calories": 31, "fat": 0.2, "carbs": 7, "category": "Veg" },
+  { "name": "Peas", "calories": 81, "fat": 0.4, "carbs": 14, "category": "Veg" },
+
+  { "name": "Apple", "calories": 95, "fat": 0.3, "carbs": 25, "category": "Fruit" },
+  { "name": "Banana", "calories": 105, "fat": 0.4, "carbs": 27, "category": "Fruit" },
+  { "name": "Orange", "calories": 62, "fat": 0.2, "carbs": 15, "category": "Fruit" },
+  { "name": "Blueberries", "calories": 85, "fat": 0.5, "carbs": 21, "category": "Fruit" },
+  { "name": "Strawberries", "calories": 53, "fat": 0.5, "carbs": 13, "category": "Fruit" },
+
+  { "name": "Milk (2%)", "calories": 122, "fat": 5, "carbs": 12, "category": "Dairy" },
+  { "name": "Cheddar Cheese", "calories": 113, "fat": 9, "carbs": 0.4, "category": "Dairy" },
+  { "name": "Greek Yogurt", "calories": 100, "fat": 0, "carbs": 6, "category": "Dairy" },
+  { "name": "Butter", "calories": 102, "fat": 12, "carbs": 0, "category": "Dairy" },
+  { "name": "Cottage Cheese", "calories": 98, "fat": 4.3, "carbs": 3.4, "category": "Dairy" },
+
+  { "name": "White Rice", "calories": 206, "fat": 0.4, "carbs": 45, "category": "Grains" },
+  { "name": "Brown Rice", "calories": 216, "fat": 1.8, "carbs": 45, "category": "Grains" },
+  { "name": "Oatmeal", "calories": 158, "fat": 3.2, "carbs": 27, "category": "Grains" },
+  { "name": "Whole Wheat Bread", "calories": 110, "fat": 1.5, "carbs": 20, "category": "Grains" },
+  { "name": "Pasta", "calories": 221, "fat": 1.3, "carbs": 43, "category": "Grains" },
+
+  { "name": "Eggs", "calories": 78, "fat": 5, "carbs": 0.6, "category": "Other" },
+  { "name": "Peanut Butter", "calories": 188, "fat": 16, "carbs": 6, "category": "Other" },
+  { "name": "Almonds", "calories": 164, "fat": 14, "carbs": 6, "category": "Other" },
+  { "name": "Black Beans", "calories": 227, "fat": 0.9, "carbs": 41, "category": "Other" },
+  { "name": "Potato", "calories": 161, "fat": 0.2, "carbs": 37, "category": "Other" }
+]
