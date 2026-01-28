@@ -220,25 +220,17 @@ function renderEntries() {
     const list = document.getElementById("entryList");
     list.innerHTML = "";
 
-    entries
-        .map((e, index) => ({ ...e, index }))
-        .filter(e => e.date === today)
-        .forEach(e => {
-            const li = document.createElement("li");
-            li.textContent = `${e.name} — ${e.calories} cal, ${e.fat}g fat, ${e.carbs}g carbs`;
-
             li.addEventListener("dblclick", () => {
-                const action = prompt(
-                    `Edit or Delete?\n\n1 = Edit\n2 = Delete\n\nEntry: ${e.name} (${e.calories} cal)`
-                );
+            const action = prompt(
+                `Edit or Delete?\n\n1 = Edit\n2 = Delete\n\nEntry: ${e.name} (${e.calories} cal)`
+            );
 
-                if (action === "1") editEntry(e.index);
-                else if (action === "2") deleteEntry(e.index);
-            });
-
-            list.appendChild(li);
+            if (action === "1") editEntry(e.index);
+            else if (action === "2") deleteEntry(e.index);
         });
-}
+
+        list.appendChild(li);
+    });
 
 // Edit entry
 function editEntry(index) {
@@ -348,6 +340,7 @@ async function loadFoodLibrary() {
 renderEntries();
 updateTotals();
 loadFoodLibrary();
+
 
 
 
