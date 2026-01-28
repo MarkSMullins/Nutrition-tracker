@@ -4,8 +4,8 @@ function saveEntries() {
     localStorage.setItem("nutritionEntries", JSON.stringify(entries));
 }
 
-// Load Food Library
-let foodLibrary = JSON.parse(localStorage.getItem("foodLibrary")) || [];
+// Load Food Library (will be filled from localStorage or foods.json)
+let foodLibrary = [];
 function saveLibrary() {
     localStorage.setItem("foodLibrary", JSON.stringify(foodLibrary));
 }
@@ -16,6 +16,7 @@ function saveDailyTotals() {
     localStorage.setItem("dailyTotals", JSON.stringify(dailyTotals));
 }
 
+// Local date (no UTC issues)
 function getTodayDate() {
     const now = new Date();
     const year = now.getFullYear();
@@ -25,7 +26,6 @@ function getTodayDate() {
 }
 
 // Daily rollover removed — entries persist normally
-
 
 // Track selected category
 let selectedCategory = null;
@@ -298,10 +298,43 @@ function clearInputs() {
     document.getElementById("carbs").value = "";
 }
 
+// Load Food Library from localStorage or foods.json
+async function loadFoodLibrary() {
+    const stored = JSON.parse(localStorage.getItem("foodLibrary")) || [];
+
+    // If user already has a library, use it as the source of truth
+    if (Array.isArray(stored) && stored.length > 0) {
+        foodLibrary = stored;
+        renderLibrary();
+        return;
+    }
+
+    // Otherwise, try to seed from foods.json
+    try {
+        const response = await fetch("foods.json");
+        if (response.ok) {
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                foodLibrary = data;
+                saveLibrary();
+                renderLibrary();
+                return;
+            }
+        }
+    } catch (err) {
+        console.error("Failed to load foods.json:", err);
+    }
+
+    // Fallback: empty library
+    foodLibrary = stored;
+    renderLibrary();
+}
+
 // Initial load
 renderEntries();
 updateTotals();
-renderLibrary();
+loadFoodLibrary();
+
 
 
 
