@@ -180,11 +180,13 @@ function renderLibrary() {
         return a.name.localeCompare(b.name);
     });
 
-    // Render filtered + sorted list
+        // Render filtered + sorted list
     sorted
         .filter(food => food.name.toLowerCase().includes(search))
         .forEach((food, index) => {
             const li = document.createElement("li");
+
+            // FULL NAME — NO TRUNCATION
             li.textContent = `${food.name} — ${food.calories} cal, ${food.fat}g fat, ${food.carbs}g carbs — [${food.category}]`;
 
             li.addEventListener("click", () => useFoodFromLibrary(food));
@@ -340,6 +342,7 @@ async function loadFoodLibrary() {
 renderEntries();
 updateTotals();
 loadFoodLibrary();
+
 
 
 
